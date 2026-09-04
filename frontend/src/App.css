@@ -1152,6 +1152,39 @@ tbody tr.start-limit-reached.selected {
   min-width: 0;
 }
 
+.portal-break-action-wrap {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  justify-items: stretch;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.portal-break-used {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--portal-muted);
+}
+
+.portal-break-used strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--portal-ink, var(--ink));
+}
+
+.portal-break-used.is-live strong {
+  color: #b45309;
+}
+
 .portal-break-action {
   width: 100%;
   aspect-ratio: 1;
@@ -1159,17 +1192,23 @@ tbody tr.start-limit-reached.selected {
   min-height: 0;
   border: 0;
   border-radius: 1.55rem;
-  font-size: 1.5rem;
+  font-size: 2.6rem;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
   padding: 1.25rem;
   display: grid;
   place-items: center;
+  align-content: center;
   text-align: center;
   white-space: normal;
   overflow-wrap: anywhere;
   cursor: pointer;
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+}
+
+.portal-break-action span {
+  display: block;
+  line-height: 1.15;
 }
 
 .portal-break-action--start {
@@ -1230,7 +1269,7 @@ tbody tr.start-limit-reached.selected {
     grid-template-columns: repeat(2, minmax(0, 15.5rem));
   }
   .portal-break-action {
-    font-size: 1.2rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -4556,6 +4595,10 @@ html[data-theme="dark"] .portal-employee-dialog {
 html[data-theme="dark"] .portal-employee-dialog__details {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .portal-break-used.is-live strong {
+  color: #fdba74;
 }
 
 html[data-theme="dark"] .portal-break-action--start:hover:not(:disabled) {

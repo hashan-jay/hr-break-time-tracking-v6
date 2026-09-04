@@ -115,13 +115,13 @@ function PortalEmployeeDialog({
               <div>
                 <dt>Meal this shift</dt>
                 <dd>
-                  <BreakStatusCell employee={employee} breakType={BREAK_TYPES.MEAL} />
+                  <StatusBadge status={meal.fields.status} color={meal.fields.statusColor} />
                 </dd>
               </div>
               <div>
                 <dt>Comfort this shift</dt>
                 <dd>
-                  <BreakStatusCell employee={employee} breakType={BREAK_TYPES.COMFORT} />
+                  <StatusBadge status={comfort.fields.status} color={comfort.fields.statusColor} />
                 </dd>
               </div>
               <div>
@@ -138,24 +138,38 @@ function PortalEmployeeDialog({
           </aside>
 
           <div className="portal-break-actions">
-            <button
-              type="button"
-              className={`portal-break-action ${meal.onThisBreak ? 'portal-break-action--end' : 'portal-break-action--start'}`}
-              disabled={busy || apiOnline === false || meal.disabled}
-              title={meal.reason || undefined}
-              onClick={() => onToggle(BREAK_TYPES.MEAL)}
-            >
-              {meal.onThisBreak ? 'End Meal Break' : 'Start Meal Break'}
-            </button>
-            <button
-              type="button"
-              className={`portal-break-action ${comfort.onThisBreak ? 'portal-break-action--end' : 'portal-break-action--start'}`}
-              disabled={busy || apiOnline === false || comfort.disabled}
-              title={comfort.reason || undefined}
-              onClick={() => onToggle(BREAK_TYPES.COMFORT)}
-            >
-              {comfort.onThisBreak ? 'End Comfort Break' : 'Start Comfort Break'}
-            </button>
+            <div className="portal-break-action-wrap">
+              <button
+                type="button"
+                className={`portal-break-action ${meal.onThisBreak ? 'portal-break-action--end' : 'portal-break-action--start'}`}
+                disabled={busy || apiOnline === false || meal.disabled}
+                title={meal.reason || undefined}
+                onClick={() => onToggle(BREAK_TYPES.MEAL)}
+              >
+                <span>{meal.onThisBreak ? 'End' : 'Start'}</span>
+                <span>Meal Break</span>
+              </button>
+              <p className={`portal-break-used${meal.onThisBreak ? ' is-live' : ''}`}>
+                Meal used
+                <strong>{meal.fields.totalDisplay}</strong>
+              </p>
+            </div>
+            <div className="portal-break-action-wrap">
+              <button
+                type="button"
+                className={`portal-break-action ${comfort.onThisBreak ? 'portal-break-action--end' : 'portal-break-action--start'}`}
+                disabled={busy || apiOnline === false || comfort.disabled}
+                title={comfort.reason || undefined}
+                onClick={() => onToggle(BREAK_TYPES.COMFORT)}
+              >
+                <span>{comfort.onThisBreak ? 'End' : 'Start'}</span>
+                <span>Comfort Break</span>
+              </button>
+              <p className={`portal-break-used${comfort.onThisBreak ? ' is-live' : ''}`}>
+                Comfort used
+                <strong>{comfort.fields.totalDisplay}</strong>
+              </p>
+            </div>
           </div>
         </div>
       </div>
