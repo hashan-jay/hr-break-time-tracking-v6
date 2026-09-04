@@ -88,53 +88,65 @@ function PortalEmployeeDialog({
             <p className="portal-employee-dialog__eyebrow">Employee details</p>
             <h2 id="portal-employee-dialog-title">{employee.fullName}</h2>
           </div>
-          <button type="button" className="btn btn-ghost" onClick={onClose}>
-            Close
+          <button
+            type="button"
+            className="portal-employee-dialog__close"
+            onClick={onClose}
+            aria-label="Close"
+            title="Close"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            </svg>
           </button>
         </header>
 
         <div className="portal-employee-dialog__body">
           <aside className="portal-employee-dialog__details">
-            <dl>
-              <div>
-                <dt>Code</dt>
-                <dd>{employee.employeeCode || '—'}</dd>
+            <div className="portal-detail-card">
+              <div className="portal-detail-field">
+                <span className="portal-detail-label">Code</span>
+                <strong className="portal-detail-value">{employee.employeeCode || '—'}</strong>
               </div>
-              <div>
-                <dt>Employee</dt>
-                <dd>{employee.fullName || '—'}</dd>
+              <div className="portal-detail-field">
+                <span className="portal-detail-label">Employee</span>
+                <strong className="portal-detail-value">{employee.fullName || '—'}</strong>
               </div>
-              <div>
-                <dt>Department</dt>
-                <dd>{employee.departmentName || '—'}</dd>
+              <div className="portal-detail-field">
+                <span className="portal-detail-label">Department</span>
+                <strong className="portal-detail-value">{employee.departmentName || '—'}</strong>
               </div>
-              <div>
-                <dt>This shift</dt>
-                <dd>{shiftLabel(employee)}</dd>
+              <div className="portal-detail-field">
+                <span className="portal-detail-label">This shift</span>
+                <strong className="portal-detail-value">{shiftLabel(employee)}</strong>
               </div>
-              <div>
-                <dt>Meal this shift</dt>
-                <dd>
-                  <StatusBadge status={meal.fields.status} color={meal.fields.statusColor} />
-                </dd>
+            </div>
+
+            <div className="portal-detail-status-grid">
+              <div className="portal-detail-status">
+                <span className="portal-detail-label">This shift</span>
+                <span className="portal-detail-status__type">Meal</span>
+                <StatusBadge status={meal.fields.status} color={meal.fields.statusColor} />
               </div>
-              <div>
-                <dt>Comfort this shift</dt>
-                <dd>
-                  <StatusBadge status={comfort.fields.status} color={comfort.fields.statusColor} />
-                </dd>
+              <div className="portal-detail-status">
+                <span className="portal-detail-label">This shift</span>
+                <span className="portal-detail-status__type">Comfort</span>
+                <StatusBadge status={comfort.fields.status} color={comfort.fields.statusColor} />
               </div>
-              <div>
-                <dt>State</dt>
-                <dd>
+            </div>
+
+            <div className="portal-detail-card portal-detail-card--state">
+              <div className="portal-detail-field">
+                <span className="portal-detail-label">State</span>
+                <strong className="portal-detail-value">
                   {employee.isOnBreak
                     ? `On ${employee.currentBreakType} break since ${formatLocalClock(employee.currentOutTime)}`
                     : offShift
                       ? offShiftReason(employee)
                       : 'In office'}
-                </dd>
+                </strong>
               </div>
-            </dl>
+            </div>
           </aside>
 
           <div className="portal-break-actions">
@@ -146,8 +158,9 @@ function PortalEmployeeDialog({
                 title={meal.reason || undefined}
                 onClick={() => onToggle(BREAK_TYPES.MEAL)}
               >
-                <span>{meal.onThisBreak ? 'End' : 'Start'}</span>
-                <span>Meal Break</span>
+                <span className="portal-break-action__verb">{meal.onThisBreak ? 'END' : 'START'}</span>
+                <span className="portal-break-action__type">MEAL</span>
+                <span className="portal-break-action__noun">BREAK</span>
               </button>
               <p className={`portal-break-used${meal.onThisBreak ? ' is-live' : ''}`}>
                 Meal used
@@ -162,8 +175,9 @@ function PortalEmployeeDialog({
                 title={comfort.reason || undefined}
                 onClick={() => onToggle(BREAK_TYPES.COMFORT)}
               >
-                <span>{comfort.onThisBreak ? 'End' : 'Start'}</span>
-                <span>Comfort Break</span>
+                <span className="portal-break-action__verb">{comfort.onThisBreak ? 'END' : 'START'}</span>
+                <span className="portal-break-action__type">COMFORT</span>
+                <span className="portal-break-action__noun">BREAK</span>
               </button>
               <p className={`portal-break-used${comfort.onThisBreak ? ' is-live' : ''}`}>
                 Comfort used

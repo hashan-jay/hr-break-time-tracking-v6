@@ -1107,38 +1107,107 @@ tbody tr.start-limit-reached.selected {
   letter-spacing: -0.02em;
 }
 
+.portal-employee-dialog__close {
+  flex: 0 0 auto;
+  width: 2.35rem;
+  height: 2.35rem;
+  padding: 0;
+  border: 1px solid var(--portal-line, var(--line));
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--portal-ink, var(--ink));
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.portal-employee-dialog__close svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.portal-employee-dialog__close:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.portal-employee-dialog__close:focus-visible {
+  outline: 2px solid rgba(17, 24, 39, 0.28);
+  outline-offset: 2px;
+}
+
 .portal-employee-dialog__body {
   display: grid;
-  grid-template-columns: minmax(15rem, 17.25rem) minmax(0, 1fr);
-  gap: 0.85rem;
+  grid-template-columns: minmax(17.5rem, 20.5rem) minmax(0, 1fr);
+  gap: 0.95rem;
   align-items: stretch;
 }
 
 .portal-employee-dialog__details {
-  background: var(--portal-accent-soft, #f8fafc);
-  border: 1px solid var(--portal-line);
-  border-radius: 1rem;
-  padding: 1rem 1.05rem;
-}
-
-.portal-employee-dialog__details dl {
-  margin: 0;
   display: grid;
-  gap: 0.75rem;
+  align-content: start;
+  gap: 0.7rem;
+  min-width: 0;
 }
 
-.portal-employee-dialog__details dt {
-  color: var(--portal-muted);
-  font-size: 0.75rem;
+.portal-detail-card,
+.portal-detail-status {
+  background: #f4f6f3;
+  border: 1px solid rgba(46, 155, 87, 0.14);
+  border-radius: 1.15rem;
+  padding: 0.9rem 0.95rem;
+}
+
+.portal-detail-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.portal-detail-field {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+
+.portal-detail-label {
+  color: #7b8794;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.portal-employee-dialog__details dd {
-  margin: 0.2rem 0 0;
-  font-size: 0.98rem;
-  font-weight: 600;
+.portal-detail-value {
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--portal-ink, var(--ink));
   overflow-wrap: anywhere;
+}
+
+.portal-detail-status-grid {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.portal-detail-status {
+  display: grid;
+  justify-items: start;
+  gap: 0.28rem;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.portal-detail-status__type {
+  color: #f5c542;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.portal-detail-status .status-badge {
+  margin-top: 0.2rem;
 }
 
 .portal-break-actions {
@@ -1192,9 +1261,9 @@ tbody tr.start-limit-reached.selected {
   min-height: 0;
   border: 0;
   border-radius: 1.55rem;
-  font-size: 2.6rem;
+  font-size: 2.15rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.12;
   padding: 1.25rem;
   display: grid;
   place-items: center;
@@ -1208,7 +1277,19 @@ tbody tr.start-limit-reached.selected {
 
 .portal-break-action span {
   display: block;
-  line-height: 1.15;
+  line-height: 1.12;
+}
+
+.portal-break-action__verb,
+.portal-break-action__noun {
+  color: #fff;
+}
+
+.portal-break-action__type {
+  color: #f5c542;
+  font-size: 3.55rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .portal-break-action--start {
@@ -1269,7 +1350,10 @@ tbody tr.start-limit-reached.selected {
     grid-template-columns: repeat(2, minmax(0, 15.5rem));
   }
   .portal-break-action {
-    font-size: 1.75rem;
+    font-size: 1.55rem;
+  }
+  .portal-break-action__type {
+    font-size: 2.5rem;
   }
 }
 
@@ -4592,9 +4676,29 @@ html[data-theme="dark"] .portal-employee-dialog {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-html[data-theme="dark"] .portal-employee-dialog__details {
+html[data-theme="dark"] .portal-detail-card,
+html[data-theme="dark"] .portal-detail-status {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .portal-detail-label {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .portal-detail-status__type {
+  color: #f5c542;
+}
+
+html[data-theme="dark"] .portal-employee-dialog__close {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .portal-employee-dialog__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 html[data-theme="dark"] .portal-break-used.is-live strong {
