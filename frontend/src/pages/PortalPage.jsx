@@ -456,13 +456,6 @@ export default function PortalPage() {
         <header className="portal-employee-header">
           <div className="portal-employee-header__text">
             <h1 className="portal-employee-title">Employee Break Portal</h1>
-            <p className="portal-employee-meta">
-              Meal {board?.mealLimitMinutes ?? 60} min
-              {' · '}
-              Comfort {board?.comfortLimitMinutes ?? 20} min
-              {' · '}
-              Select an employee to start or end a break
-            </p>
           </div>
           <div className="portal-employee-header__actions">
             <ThemeToggle />
@@ -539,11 +532,6 @@ export default function PortalPage() {
             />
           </label>
         </div>
-        <p className="hint">
-          {board?.periodLabel
-            ? `Shift window: ${board.periodLabel}`
-            : 'All employees: only staff whose shift is live at this local time can start or end a break. Everyone else is greyed out until their shift starts.'}
-        </p>
 
         <section className="portal-roster-section">
           <header className="portal-roster-section__head">
