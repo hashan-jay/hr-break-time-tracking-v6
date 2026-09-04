@@ -67,7 +67,6 @@ function PortalEmployeeDialog({
 }) {
   const meal = breakButtonState(employee, BREAK_TYPES.MEAL, board?.mealStartLimit);
   const comfort = breakButtonState(employee, BREAK_TYPES.COMFORT, board?.comfortStartLimit);
-  const offShift = isOffShift(employee);
 
   return (
     <div
@@ -84,7 +83,7 @@ function PortalEmployeeDialog({
         aria-labelledby="portal-employee-dialog-title"
       >
         <header className="portal-employee-dialog__head">
-          <div>
+          <div className="portal-employee-dialog__title">
             <p className="portal-employee-dialog__eyebrow">Employee details</p>
             <h2 id="portal-employee-dialog-title">{employee.fullName}</h2>
           </div>
@@ -119,32 +118,6 @@ function PortalEmployeeDialog({
               <div className="portal-detail-field">
                 <span className="portal-detail-label">This shift</span>
                 <strong className="portal-detail-value">{shiftLabel(employee)}</strong>
-              </div>
-            </div>
-
-            <div className="portal-detail-status-grid">
-              <div className="portal-detail-status">
-                <span className="portal-detail-label">This shift</span>
-                <span className="portal-detail-status__type">Meal</span>
-                <StatusBadge status={meal.fields.status} color={meal.fields.statusColor} />
-              </div>
-              <div className="portal-detail-status">
-                <span className="portal-detail-label">This shift</span>
-                <span className="portal-detail-status__type">Comfort</span>
-                <StatusBadge status={comfort.fields.status} color={comfort.fields.statusColor} />
-              </div>
-            </div>
-
-            <div className="portal-detail-card portal-detail-card--state">
-              <div className="portal-detail-field">
-                <span className="portal-detail-label">State</span>
-                <strong className="portal-detail-value">
-                  {employee.isOnBreak
-                    ? `On ${employee.currentBreakType} break since ${formatLocalClock(employee.currentOutTime)}`
-                    : offShift
-                      ? offShiftReason(employee)
-                      : 'In office'}
-                </strong>
               </div>
             </div>
           </aside>
@@ -516,46 +489,55 @@ export default function PortalPage() {
           </div>
         )}
 
-        <div className="portal-board__toolbar portal-shared-filters">
-          <select
-            className="portal-board__shift"
-            value={shiftId}
-            onChange={(e) => {
-              const next = e.target.value;
-              setShiftId(next);
-              if (!next || next === shiftId2) setShiftId2('');
-            }}
-            aria-label="Primary shift"
-          >
-            <option value="">All Employees</option>
-            {shifts.map((s) => (
-              <option key={s.id} value={s.id}>{s.displayLabel || s.name}</option>
-            ))}
-          </select>
-          <select
-            className="portal-board__shift"
-            value={shiftId2}
-            onChange={(e) => setShiftId2(e.target.value)}
-            disabled={!shiftId}
-            aria-label="Overlapping shift"
-          >
-            <option value="">No overlap</option>
-            {shifts.map((s) => {
-              const locked = String(s.id) === String(shiftId);
-              return (
-                <option key={s.id} value={s.id} disabled={locked}>
-                  {locked ? `${s.displayLabel || s.name} (selected)` : (s.displayLabel || s.name)}
-                </option>
-              );
-            })}
-          </select>
-          <input
-            ref={searchRef}
-            className="portal-board__search"
-            placeholder="Search by name or employee ID…  (/ to focus)"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="portal-employee-filters">
+          <label className="portal-employee-filter">
+            <span>Shift</span>
+            <select
+              className="portal-board__shift"
+              value={shiftId}
+              onChange={(e) => {
+                const next = e.target.value;
+                setShiftId(next);
+                if (!next || next === shiftId2) setShiftId2('');
+              }}
+              aria-label="Primary shift"
+            >
+              <option value="">All Employees</option>
+              {shifts.map((s) => (
+                <option key={s.id} value={s.id}>{s.displayLabel || s.name}</option>
+              ))}
+            </select>
+          </label>
+          <label className="portal-employee-filter">
+            <span>Overlap</span>
+            <select
+              className="portal-board__shift"
+              value={shiftId2}
+              onChange={(e) => setShiftId2(e.target.value)}
+              disabled={!shiftId}
+              aria-label="Overlapping shift"
+            >
+              <option value="">No overlap</option>
+              {shifts.map((s) => {
+                const locked = String(s.id) === String(shiftId);
+                return (
+                  <option key={s.id} value={s.id} disabled={locked}>
+                    {locked ? `${s.displayLabel || s.name} (selected)` : (s.displayLabel || s.name)}
+                  </option>
+                );
+              })}
+            </select>
+          </label>
+          <label className="portal-employee-filter portal-employee-filter--search">
+            <span>Search</span>
+            <input
+              ref={searchRef}
+              className="portal-board__search"
+              placeholder="Search by name or employee ID…  (/ to focus)"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </label>
         </div>
         <p className="hint">
           {board?.periodLabel
