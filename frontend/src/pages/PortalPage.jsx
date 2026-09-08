@@ -455,6 +455,9 @@ export default function PortalPage() {
       <main className="portal-main">
         <header className="portal-employee-header">
           <div className="portal-employee-header__text">
+            <span className="portal-ig-mark" aria-hidden="true">
+              <span className="portal-ig-mark__lens" />
+            </span>
             <h1 className="portal-employee-title">Employee Break Portal</h1>
           </div>
           <div className="portal-employee-header__actions">
@@ -523,13 +526,19 @@ export default function PortalPage() {
           </label>
           <label className="portal-employee-filter portal-employee-filter--search">
             <span>Search</span>
-            <input
-              ref={searchRef}
-              className="portal-board__search"
-              placeholder="Search by name or employee ID…  (/ to focus)"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <div className="portal-ig-search">
+              <svg className="portal-ig-search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.25" stroke="currentColor" strokeWidth="1.75" />
+                <path d="M16.2 16.2L20 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              </svg>
+              <input
+                ref={searchRef}
+                className="portal-board__search"
+                placeholder="Search by name or employee ID…  (/ to focus)"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </label>
         </div>
 
