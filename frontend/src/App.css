@@ -123,6 +123,10 @@
   font-variant-numeric: tabular-nums;
 }
 
+.portal-clock__section {
+  display: contents;
+}
+
 .portal-clock__date {
   margin: 0;
   font-size: 0.88rem;
@@ -233,6 +237,10 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   padding-top: 1rem;
   text-align: center;
   font-size: 0.75rem;
+}
+
+.portal-shell .portal-credits--page {
+  font-size: 0.85rem;
 }
 
 .login-screen .portal-credits--page {
@@ -348,17 +356,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
-  background:
-    linear-gradient(
-      135deg,
-      #ffb3c6 0%,
-      #ffd6a5 16%,
-      #fdffb6 32%,
-      #caffbf 48%,
-      #9bf6ff 64%,
-      #bdb2ff 80%,
-      #ffc6ff 100%
-    );
+  background: linear-gradient(160deg, #f7fee7 0%, #ecfccb 46%, #d9f99d 100%);
   background-attachment: fixed;
   color: var(--ig-ink);
   font-family: var(--ig-font);
@@ -588,7 +586,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 .portal-employee-title {
   margin: 0;
   font-family: "Syne", "Montserrat", sans-serif;
-  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-size: clamp(1.2rem, 2.2vw, 1.6rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.2;
@@ -598,7 +596,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 .portal-employee-subtitle {
   margin: 0;
   font-family: "Syne", "Montserrat", sans-serif;
-  font-size: clamp(0.82rem, 1.5vw, 1.05rem);
+  font-size: clamp(0.92rem, 1.65vw, 1.18rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -636,30 +634,47 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 
 .portal-shell .portal-clock,
 .portal-employee-header .portal-clock {
-  padding: 0.45rem 0.85rem;
+  padding: 0;
   min-width: 0;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   border-radius: var(--ig-radius);
   border: 1px solid var(--ig-line);
   background: var(--ig-card);
   box-shadow: none;
+  align-items: stretch;
+  overflow: hidden;
+  gap: 0;
+}
+
+.portal-employee-header .portal-clock__section {
+  display: flex;
   align-items: center;
-  gap: 0.7rem;
+  padding: 0.35rem 0.85rem;
+}
+
+.portal-employee-header .portal-clock__section--date {
+  background: var(--ig-fill);
+  border-right: 1px solid var(--ig-line);
+}
+
+.portal-employee-header .portal-clock__section--time {
+  background: var(--ig-card);
 }
 
 .portal-employee-header .portal-clock__time {
   font-family: var(--ig-font);
-  font-size: 1.05rem;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   line-height: 1;
   color: var(--ig-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .portal-employee-header .portal-clock__date {
   font-family: var(--ig-font);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: var(--ig-muted);
 }
 
@@ -676,14 +691,14 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   background: var(--ig-card);
   white-space: nowrap;
   font-family: var(--ig-font);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--ig-muted);
 }
 
 .portal-employee-header .portal-onbreak-chip strong {
   color: var(--ig-like);
-  font-size: 1.05rem;
+  font-size: 1.18rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.02em;
@@ -706,7 +721,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   border-radius: 999px;
   padding: 0.28rem 0.7rem;
   font-family: var(--ig-font);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--ig-muted);
   white-space: nowrap;
@@ -714,7 +729,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 
 .portal-onbreak-chip strong {
   color: var(--ig-ink);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -778,7 +793,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 
 .portal-employee-filter span {
   color: var(--ig-muted);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   text-transform: none;
@@ -806,7 +821,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   min-width: 0;
   flex: none;
   font-family: var(--ig-font);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--ig-ink);
   background: var(--ig-fill);
@@ -1143,21 +1158,21 @@ tbody tr.start-limit-reached.selected {
 .portal-shell tbody tr.on-break { box-shadow: inset 3px 0 0 var(--ig-blue); }
 
 .portal-shell .btn-primary {
-  background: var(--ig-blue);
+  background: #120a8f;
   color: #fff;
   border: none;
   border-radius: var(--ig-control);
   min-height: 2.5rem;
   padding: 0.5rem 1rem;
   font-family: var(--ig-font);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 600;
   box-shadow: none;
   transform: none;
 }
 
 .portal-shell .btn-primary:hover {
-  background: var(--ig-blue-hover);
+  background: #0c0766;
   transform: none;
 }
 
@@ -1198,7 +1213,7 @@ tbody tr.start-limit-reached.selected {
 .portal-roster-section__head h2 {
   margin: 0 0 0.15rem;
   font-family: var(--ig-font);
-  font-size: 1rem;
+  font-size: 1.12rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   text-transform: none;
@@ -1209,7 +1224,7 @@ tbody tr.start-limit-reached.selected {
   margin: 0;
   color: var(--ig-muted);
   font-family: var(--ig-font);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 500;
 }
 
@@ -1236,7 +1251,7 @@ tbody tr.start-limit-reached.selected {
 
 .portal-roster .portal-board__table th {
   font-family: var(--ig-font);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1247,14 +1262,14 @@ tbody tr.start-limit-reached.selected {
 
 .portal-roster .portal-board__table td {
   font-family: var(--ig-font);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--ig-ink);
   border-bottom: 1px solid #efefef;
 }
 
 .portal-roster .portal-board__table .col-name {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 650;
 }
 
@@ -1266,7 +1281,7 @@ tbody tr.start-limit-reached.selected {
 
 .portal-break-status span {
   font-family: var(--ig-font);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ig-muted);
@@ -1275,7 +1290,7 @@ tbody tr.start-limit-reached.selected {
 .portal-shell .status-badge {
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   letter-spacing: 0.03em;
 }
 
@@ -1293,9 +1308,9 @@ tbody tr.start-limit-reached.selected {
   background: var(--surface);
   color: var(--portal-ink, var(--ink));
   border: 1px solid var(--portal-line, var(--line));
-  border-radius: 1.15rem;
+  border-radius: 12px;
   padding: 1rem 1.15rem 1.15rem;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.12);
   display: grid;
   gap: 0.85rem;
   overflow: hidden;
@@ -1307,8 +1322,9 @@ tbody tr.start-limit-reached.selected {
   position: relative;
   display: grid;
   justify-items: center;
-  padding: 0 2.75rem;
+  padding: 0.15rem 2.75rem 0.65rem;
   text-align: center;
+  border-bottom: 1px solid var(--portal-line, var(--line));
 }
 
 .portal-employee-dialog__title {
@@ -1317,11 +1333,12 @@ tbody tr.start-limit-reached.selected {
 }
 
 .portal-employee-dialog__eyebrow {
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.2rem;
   color: var(--portal-muted);
   font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .portal-employee-dialog__head h2 {
@@ -1329,7 +1346,7 @@ tbody tr.start-limit-reached.selected {
   font-family: var(--ig-font);
   font-size: 2.15rem;
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
@@ -1339,12 +1356,12 @@ tbody tr.start-limit-reached.selected {
   top: 0;
   right: 0;
   flex: 0 0 auto;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.25rem;
+  height: 2.25rem;
   padding: 0;
-  border: 1px solid var(--portal-line, var(--line));
-  border-radius: 999px;
-  background: var(--surface);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
   color: var(--portal-ink, var(--ink));
   display: grid;
   place-items: center;
@@ -1352,8 +1369,8 @@ tbody tr.start-limit-reached.selected {
 }
 
 .portal-employee-dialog__close svg {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .portal-employee-dialog__close:hover {
@@ -4738,17 +4755,7 @@ html[data-theme="dark"] .portal-shell {
   --ig-canvas: #000000;
   --ig-card: #121212;
   --ig-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-  background:
-    linear-gradient(
-      135deg,
-      #4a1d2a 0%,
-      #4a3314 16%,
-      #3a3a12 32%,
-      #16381f 48%,
-      #0e3340 64%,
-      #24184a 80%,
-      #3a1840 100%
-    );
+  background: linear-gradient(160deg, #0f1a10 0%, #14532d 46%, #052e16 100%);
   background-attachment: fixed;
   color: var(--ig-ink);
 }
@@ -5036,13 +5043,13 @@ html[data-theme="dark"] .portal-shell .portal-clock__time {
 }
 
 html[data-theme="dark"] .portal-shell .btn-primary {
-  background: var(--ig-blue);
+  background: #120a8f;
   color: #fff;
   border-color: transparent;
 }
 
 html[data-theme="dark"] .portal-shell .btn-primary:hover {
-  background: var(--ig-blue-hover);
+  background: #1b14b0;
   color: #fff;
 }
 
