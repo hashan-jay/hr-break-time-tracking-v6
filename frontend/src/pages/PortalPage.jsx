@@ -455,9 +455,6 @@ export default function PortalPage() {
       <main className="portal-main">
         <header className="portal-employee-header">
           <div className="portal-employee-header__text">
-            <span className="portal-ig-mark" aria-hidden="true">
-              <span className="portal-ig-mark__lens" />
-            </span>
             <h1 className="portal-employee-title">Employee Break Portal</h1>
           </div>
           <div className="portal-employee-header__actions">

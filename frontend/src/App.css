@@ -343,13 +343,24 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   --ig-like: #ed4956;
   --ig-radius: 12px;
   --ig-control: 8px;
-  --ig-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --ig-font: "Montserrat", "Segoe UI", sans-serif;
   --ig-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   background: var(--ig-canvas);
   color: var(--ig-ink);
+  font-family: var(--ig-font);
+}
+
+.portal-shell,
+.portal-shell button,
+.portal-shell input,
+.portal-shell select,
+.portal-shell textarea,
+.portal-shell table,
+.portal-shell th,
+.portal-shell td {
   font-family: var(--ig-font);
 }
 
@@ -561,37 +572,6 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   align-items: center;
   gap: 0.7rem;
   flex-wrap: wrap;
-}
-
-.portal-ig-mark {
-  position: relative;
-  width: 2rem;
-  height: 2rem;
-  flex-shrink: 0;
-  border-radius: 0.55rem;
-  background:
-    radial-gradient(circle at 70% 30%, #fccc63 0%, transparent 28%),
-    radial-gradient(circle at 30% 80%, #f77737 0%, transparent 42%),
-    linear-gradient(135deg, #f58529 0%, #dd2a7b 52%, #8134af 100%);
-  box-shadow: inset 0 0 0 2px #fff;
-}
-
-.portal-ig-mark__lens {
-  position: absolute;
-  inset: 0.42rem;
-  border: 2px solid #fff;
-  border-radius: 50%;
-}
-
-.portal-ig-mark__lens::after {
-  content: "";
-  position: absolute;
-  top: -0.18rem;
-  right: -0.08rem;
-  width: 0.28rem;
-  height: 0.28rem;
-  border-radius: 50%;
-  background: #fff;
 }
 
 .portal-employee-title {
@@ -1300,7 +1280,7 @@ tbody tr.start-limit-reached.selected {
   gap: 0.85rem;
   overflow: hidden;
   animation: confirm-in 0.18s ease;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
 }
 
 .portal-employee-dialog__head {
@@ -1326,7 +1306,7 @@ tbody tr.start-limit-reached.selected {
 
 .portal-employee-dialog__head h2 {
   margin: 0;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
   font-size: 2.15rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -1395,7 +1375,7 @@ tbody tr.start-limit-reached.selected {
 
 .portal-detail-label {
   color: #6b7280;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -1403,7 +1383,7 @@ tbody tr.start-limit-reached.selected {
 }
 
 .portal-detail-value {
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -1433,7 +1413,7 @@ tbody tr.start-limit-reached.selected {
 .portal-break-used {
   margin: 0;
   text-align: center;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -1463,7 +1443,7 @@ tbody tr.start-limit-reached.selected {
   min-height: 0;
   border: 0;
   border-radius: 1.55rem;
-  font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  font-family: var(--ig-font);
   font-size: 2.15rem;
   font-weight: 800;
   line-height: 1.12;
