@@ -348,7 +348,18 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
-  background: var(--ig-canvas);
+  background:
+    linear-gradient(
+      135deg,
+      #ffb3c6 0%,
+      #ffd6a5 16%,
+      #fdffb6 32%,
+      #caffbf 48%,
+      #9bf6ff 64%,
+      #bdb2ff 80%,
+      #ffc6ff 100%
+    );
+  background-attachment: fixed;
   color: var(--ig-ink);
   font-family: var(--ig-font);
 }
@@ -577,12 +588,11 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 .portal-employee-title {
   margin: 0;
   font-family: var(--ig-font);
-  font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.2;
   color: var(--ig-ink);
-  white-space: nowrap;
 }
 
 .portal-employee-meta {
@@ -4718,7 +4728,18 @@ html[data-theme="dark"] .portal-shell {
   --ig-canvas: #000000;
   --ig-card: #121212;
   --ig-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-  background: var(--ig-canvas);
+  background:
+    linear-gradient(
+      135deg,
+      #4a1d2a 0%,
+      #4a3314 16%,
+      #3a3a12 32%,
+      #16381f 48%,
+      #0e3340 64%,
+      #24184a 80%,
+      #3a1840 100%
+    );
+  background-attachment: fixed;
   color: var(--ig-ink);
 }
 
