@@ -521,7 +521,7 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
-  background: linear-gradient(160deg, #f7fee7 0%, #ecfccb 46%, #d9f99d 100%);
+  background: linear-gradient(160deg, #86efac 0%, #bbf7d0 32%, #fed7aa 68%, #fb923c 100%);
   background-attachment: fixed;
   color: var(--ig-ink);
   font-family: var(--ig-font);
@@ -4208,7 +4208,7 @@ html[data-theme="dark"] .onbreak-now__timer {
 
 .app-portal.login-screen.login-screen--ig {
   font-family: "Montserrat", "Segoe UI", sans-serif;
-  background: linear-gradient(160deg, #f7fee7 0%, #ecfccb 46%, #d9f99d 100%);
+  background: linear-gradient(160deg, #86efac 0%, #bbf7d0 32%, #fed7aa 68%, #fb923c 100%);
   background-attachment: fixed;
 }
 
@@ -4343,7 +4343,7 @@ html[data-theme="dark"] .onbreak-now__timer {
 }
 
 html[data-theme="dark"] .app-portal.login-screen.login-screen--ig {
-  background: linear-gradient(160deg, #0f1a10 0%, #14532d 46%, #052e16 100%);
+  background: linear-gradient(160deg, #14532d 0%, #166534 28%, #c2410c 66%, #9a3412 100%);
   background-attachment: fixed;
 }
 
@@ -5517,7 +5517,7 @@ html[data-theme="dark"] .portal-shell {
   --ig-canvas: #000000;
   --ig-card: #121212;
   --ig-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
-  background: linear-gradient(160deg, #0f1a10 0%, #14532d 46%, #052e16 100%);
+  background: linear-gradient(160deg, #14532d 0%, #166534 28%, #c2410c 66%, #9a3412 100%);
   background-attachment: fixed;
   color: var(--ig-ink);
 }
