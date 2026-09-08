@@ -580,19 +580,29 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   min-width: 0;
   flex: 1 1 16rem;
   display: flex;
-  align-items: center;
-  gap: 0.7rem;
+  align-items: baseline;
+  gap: 0.65rem;
   flex-wrap: wrap;
 }
 
 .portal-employee-title {
   margin: 0;
-  font-family: var(--ig-font);
+  font-family: "Syne", "Montserrat", sans-serif;
   font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--ig-ink);
+}
+
+.portal-employee-subtitle {
+  margin: 0;
+  font-family: "Syne", "Montserrat", sans-serif;
+  font-size: clamp(0.82rem, 1.5vw, 1.05rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: var(--ig-ink);
+  color: var(--ig-muted);
 }
 
 .portal-employee-meta {

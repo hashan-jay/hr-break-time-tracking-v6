@@ -455,7 +455,8 @@ export default function PortalPage() {
       <main className="portal-main">
         <header className="portal-employee-header">
           <div className="portal-employee-header__text">
-            <h1 className="portal-employee-title">EMPLOYEE BREAK PORTAL - HTSK / PortCity BPO</h1>
+            <h1 className="portal-employee-title">Employee Break Portal</h1>
+            <h2 className="portal-employee-subtitle">PortCity BPO - HTSK Division</h2>
           </div>
           <div className="portal-employee-header__actions">
             <ThemeToggle />
