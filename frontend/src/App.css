@@ -843,7 +843,8 @@ html[data-theme="dark"] .portal-logout:focus-visible {
 }
 
 @media (max-width: 820px) {
-  .portal-employee-filters {
+  .portal-employee-filters,
+  .tracking-page .tracking-filters {
     grid-template-columns: 1fr;
   }
 }
@@ -958,6 +959,181 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   padding: 0.35rem 0.75rem;
   font-size: 0.85rem;
   white-space: nowrap;
+}
+
+.tracking-page {
+  --ig-blue: #0095f6;
+  --ig-blue-hover: #1877f2;
+  --ig-ink: #262626;
+  --ig-muted: #737373;
+  --ig-line: #dbdbdb;
+  --ig-fill: #efefef;
+  --ig-canvas: #fafafa;
+  --ig-card: #ffffff;
+  --ig-like: #ed4956;
+  --ig-radius: 12px;
+  --ig-control: 8px;
+  --ig-font: "Montserrat", "Segoe UI", sans-serif;
+  --ig-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.tracking-page .tracking-filters {
+  grid-template-columns: minmax(9rem, 13rem) minmax(9rem, 13rem) minmax(9rem, 13rem) minmax(14rem, 1fr);
+}
+
+.tracking-page .list-switch {
+  border: 1px solid var(--ig-line);
+  background: var(--ig-card);
+  border-radius: 999px;
+  box-shadow: var(--ig-shadow);
+  font-family: var(--ig-font);
+}
+
+.tracking-page .list-switch__btn {
+  border-radius: 999px;
+  font-family: var(--ig-font);
+  color: var(--ig-muted);
+}
+
+.tracking-page .list-switch__btn:hover {
+  color: var(--ig-ink);
+  background: var(--ig-canvas);
+}
+
+.tracking-page .list-switch__btn.is-active {
+  background: #120a8f;
+  color: #fff;
+}
+
+.tracking-page .list-switch__count {
+  background: var(--ig-fill);
+  color: var(--ig-ink);
+}
+
+.tracking-page .list-switch__btn.is-active .list-switch__count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.tracking-page .tracking-break-stack {
+  gap: 1rem;
+}
+
+.tracking-page .break-type-focus {
+  border-radius: var(--ig-radius);
+}
+
+.tracking-page .tracking-roster {
+  font-family: var(--ig-font);
+}
+
+.tracking-page .portal-onbreak-chip strong {
+  color: var(--ig-like);
+}
+
+.tracking-page .tracking-capture {
+  border: 1px solid var(--ig-line);
+  border-radius: var(--ig-control);
+  box-shadow: none;
+  background: var(--ig-canvas);
+  font-family: var(--ig-font);
+}
+
+.tracking-page .tracking-capture h2 {
+  font-family: var(--ig-font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ig-ink);
+}
+
+.tracking-page .tracking-capture .hint,
+.tracking-page .tracking-capture .selected-meta {
+  color: var(--ig-muted);
+  font-family: var(--ig-font);
+}
+
+.tracking-page .tracking-capture .selected-employee {
+  background: var(--ig-card);
+  border: 1px solid var(--ig-line);
+  border-radius: var(--ig-control);
+}
+
+.tracking-page .tracking-capture .btn {
+  border-radius: var(--ig-control);
+  font-family: var(--ig-font);
+  box-shadow: none;
+  transform: none;
+}
+
+.tracking-page .tracking-capture .btn:hover {
+  transform: none;
+}
+
+.tracking-page .tracking-capture .btn-ghost {
+  background: var(--ig-card);
+  border: 1px solid var(--ig-line);
+  color: var(--ig-ink);
+}
+
+.tracking-page .tracking-time strong {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.tracking-page .portal-roster.portal-board {
+  display: block;
+  grid-template-rows: none;
+}
+
+.tracking-page .portal-roster .portal-board__table {
+  max-height: min(48vh, 560px);
+}
+
+.tracking-page .portal-roster .portal-board__table table {
+  min-width: 540px;
+}
+
+.tracking-page .tracking-roster tbody tr:hover {
+  background: var(--ig-canvas);
+}
+
+.tracking-page .tracking-roster tbody tr.selected {
+  background: #e7f3ff;
+}
+
+.tracking-page .tracking-roster tbody tr.on-break {
+  box-shadow: inset 3px 0 0 var(--ig-blue);
+}
+
+.tracking-page .break-type-focus.is-active {
+  box-shadow: 0 0 0 2px rgba(18, 10, 143, 0.28);
+}
+
+.tracking-page .status-badge {
+  border-radius: 999px;
+  font-family: var(--ig-font);
+}
+
+html[data-theme="dark"] .tracking-page {
+  --ig-ink: #f5f5f5;
+  --ig-muted: #a8a8a8;
+  --ig-line: #363636;
+  --ig-fill: #262626;
+  --ig-canvas: #000000;
+  --ig-card: #121212;
+  --ig-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .tracking-page .tracking-roster tbody tr.selected {
+  background: #142033;
+}
+
+html[data-theme="dark"] .tracking-page .tracking-capture {
+  background: var(--ig-canvas);
+  border-color: var(--ig-line);
 }
 
 .settings-section-title {

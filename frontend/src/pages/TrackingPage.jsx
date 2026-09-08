@@ -40,94 +40,91 @@ function BreakTypeBoard({
   const captureLocked = Boolean(blockedByOther || (offShift && !onThisBreak) || (startBlocked && !onThisBreak));
 
   return (
-    <section className="break-type-board">
-      <header className="break-type-board__header">
+    <section className="portal-roster-section break-type-board tracking-roster">
+      <header className="portal-roster-section__head">
         <div>
           <h2>{title}</h2>
           <p>
-            {subtitle} Daily limit: <strong>{limitMinutes ?? '—'} minutes</strong>.
+            {subtitle} Daily limit <strong>{limitMinutes ?? '—'} min</strong>
           </p>
         </div>
-        <div className="break-type-board__chip">
-          On break{' '}
-          <strong>
-            {employees.filter((e) => typeFields(e, breakType).isOnThisBreak).length}
-          </strong>
+        <div className="portal-onbreak-chip">
+          On break <strong>{employees.filter((e) => typeFields(e, breakType).isOnThisBreak).length}</strong>
         </div>
       </header>
 
-      <div className="tracking-layout">
-        <aside className="capture-panel">
-          <h2>Capture {title}</h2>
-          {selected && selectedFields ? (
-            <>
-              <div className="selected-employee">
-                <strong>{selected.fullName}</strong>
-                <span>{selected.employeeCode} · {selected.departmentName}</span>
-                <StatusBadge status={selectedFields.status} color={selectedFields.statusColor} />
-                <div className="selected-meta">
-                  <div>
-                    This shift {breakType.toLowerCase()} total:{' '}
-                    <strong>{selectedFields.totalDisplay}</strong> ({selectedFields.totalSeconds}s)
-                  </div>
-                  <div>
-                    {onThisBreak
-                      ? `Out since ${formatLocalClock(selected.currentOutTime)} · open ${formatElapsed(selected.currentBreakElapsedSeconds)}`
-                      : blockedByOther
-                        ? `Currently on ${selected.currentBreakType} break — end that first`
-                        : offShift
-                          ? offShiftReason(selected)
-                          : startBlocked
-                            ? startLimitReason(selected, breakType)
-                            : 'Currently in office'}
-                  </div>
+      <aside className="capture-panel tracking-capture">
+        <h2>Capture {title}</h2>
+        {selected && selectedFields ? (
+          <>
+            <div className="selected-employee">
+              <strong>{selected.fullName}</strong>
+              <span>{selected.employeeCode} · {selected.departmentName}</span>
+              <StatusBadge status={selectedFields.status} color={selectedFields.statusColor} />
+              <div className="selected-meta">
+                <div>
+                  This shift {breakType.toLowerCase()} total:{' '}
+                  <strong>{selectedFields.totalDisplay}</strong>
+                </div>
+                <div>
+                  {onThisBreak
+                    ? `Out since ${formatLocalClock(selected.currentOutTime)} · open ${formatElapsed(selected.currentBreakElapsedSeconds)}`
+                    : blockedByOther
+                      ? `Currently on ${selected.currentBreakType} break — end that first`
+                      : offShift
+                        ? offShiftReason(selected)
+                        : startBlocked
+                          ? startLimitReason(selected, breakType)
+                          : 'Currently in office'}
                 </div>
               </div>
+            </div>
+            <button
+              type="button"
+              className={`btn ${onThisBreak ? 'btn-in' : 'btn-out'} btn-xl`}
+              disabled={busy || captureLocked}
+              onClick={() => onToggle(breakType)}
+            >
+              {onThisBreak
+                ? `End ${breakType} break (Space / Enter)`
+                : `Start ${breakType} break (Enter / Space)`}
+            </button>
+            <div className="capture-split">
               <button
                 type="button"
-                className={`btn ${onThisBreak ? 'btn-in' : 'btn-out'} btn-xl`}
-                disabled={busy || captureLocked}
-                onClick={() => onToggle(breakType)}
+                className="btn btn-ghost"
+                disabled={busy || selected.isOnBreak || offShift || startBlocked}
+                onClick={() => onOut(breakType)}
               >
-                {onThisBreak
-                  ? `End ${breakType} break (Space / Enter)`
-                  : `Start ${breakType} break (Enter / Space)`}
+                Out only (O)
               </button>
-              <div className="capture-split">
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  disabled={busy || selected.isOnBreak || offShift || startBlocked}
-                  onClick={() => onOut(breakType)}
-                >
-                  Out only (O)
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  disabled={busy || !onThisBreak}
-                  onClick={() => onIn(breakType)}
-                >
-                  In only (I)
-                </button>
-              </div>
-              <p className="hint">
-                Meal and Comfort are tracked separately. Only one break can be open at a time.
-              </p>
-            </>
-          ) : (
-            <p className="hint">Select an employee from the list to capture {breakType.toLowerCase()} break time.</p>
-          )}
-        </aside>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                disabled={busy || !onThisBreak}
+                onClick={() => onIn(breakType)}
+              >
+                In only (I)
+              </button>
+            </div>
+            <p className="hint">
+              Meal and Comfort are tracked separately. Only one break can be open at a time.
+            </p>
+          </>
+        ) : (
+          <p className="hint">Select an employee from the list to capture {breakType.toLowerCase()} break time.</p>
+        )}
+      </aside>
 
-        <div className="table-wrap">
+      <div className="portal-board portal-roster">
+        <div className="portal-board__table">
           <table>
             <thead>
               <tr>
                 <th>Code</th>
                 <th>Employee</th>
                 <th>Department</th>
-                <th>This shift (HH:MM:SS)</th>
+                <th>This shift</th>
                 <th>Status</th>
                 <th>State</th>
               </tr>
@@ -162,12 +159,11 @@ function BreakTypeBoard({
                       if (selectable) onSelect(e.employeeId);
                     }}
                   >
-                    <td>{e.employeeCode}</td>
+                    <td className="col-code">{e.employeeCode}</td>
                     <td className="col-name">{e.fullName}</td>
                     <td>{e.departmentName}</td>
-                    <td className={fields.isOnThisBreak ? 'is-live-total' : undefined}>
+                    <td className={`tracking-time${fields.isOnThisBreak ? ' is-live-total' : ''}`}>
                       <strong>{fields.totalDisplay}</strong>
-                      <div className="muted">{fields.totalSeconds}s</div>
                     </td>
                     <td><StatusBadge status={fields.status} color={fields.statusColor} /></td>
                     <td>
@@ -520,50 +516,75 @@ export default function TrackingPage() {
         </div>
       </header>
 
-      <div className="toolbar">
-        <input
-          ref={searchRef}
-          className="search"
-          placeholder="Search employee / department…  (/ to focus)"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select
-          value={shiftId}
-          onChange={(e) => {
-            const next = e.target.value;
-            setShiftId(next);
-            if (!next || next === shiftId2) setShiftId2('');
-          }}
-          aria-label="Primary shift"
-        >
-          <option value="">All shifts</option>
-          {shifts.map((s) => (
-            <option key={s.id} value={s.id}>{s.displayLabel || s.name}</option>
-          ))}
-        </select>
-        <select
-          value={shiftId2}
-          onChange={(e) => setShiftId2(e.target.value)}
-          disabled={!shiftId}
-          aria-label="Overlapping shift"
-        >
-          <option value="">No overlap</option>
-          {shifts.map((s) => {
-            const locked = String(s.id) === String(shiftId);
-            return (
-              <option key={s.id} value={s.id} disabled={locked}>
-                {locked ? `${s.displayLabel || s.name} (selected)` : (s.displayLabel || s.name)}
-              </option>
-            );
-          })}
-        </select>
-        <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} aria-label="Filter by department">
-          <option value="">All departments</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>{d.name}</option>
-          ))}
-        </select>
+      <div className="portal-employee-filters tracking-filters">
+        <label className="portal-employee-filter">
+          <span>Shift</span>
+          <select
+            className="portal-board__shift"
+            value={shiftId}
+            onChange={(e) => {
+              const next = e.target.value;
+              setShiftId(next);
+              if (!next || next === shiftId2) setShiftId2('');
+            }}
+            aria-label="Primary shift"
+          >
+            <option value="">All shifts</option>
+            {shifts.map((s) => (
+              <option key={s.id} value={s.id}>{s.displayLabel || s.name}</option>
+            ))}
+          </select>
+        </label>
+        <label className="portal-employee-filter">
+          <span>Overlap</span>
+          <select
+            className="portal-board__shift"
+            value={shiftId2}
+            onChange={(e) => setShiftId2(e.target.value)}
+            disabled={!shiftId}
+            aria-label="Overlapping shift"
+          >
+            <option value="">No overlap</option>
+            {shifts.map((s) => {
+              const locked = String(s.id) === String(shiftId);
+              return (
+                <option key={s.id} value={s.id} disabled={locked}>
+                  {locked ? `${s.displayLabel || s.name} (selected)` : (s.displayLabel || s.name)}
+                </option>
+              );
+            })}
+          </select>
+        </label>
+        <label className="portal-employee-filter">
+          <span>Department</span>
+          <select
+            className="portal-board__shift"
+            value={departmentId}
+            onChange={(e) => setDepartmentId(e.target.value)}
+            aria-label="Filter by department"
+          >
+            <option value="">All departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </select>
+        </label>
+        <label className="portal-employee-filter portal-employee-filter--search">
+          <span>Search</span>
+          <div className="portal-ig-search">
+            <svg className="portal-ig-search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.25" stroke="currentColor" strokeWidth="1.75" />
+              <path d="M16.2 16.2L20 20" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+            </svg>
+            <input
+              ref={searchRef}
+              className="portal-board__search"
+              placeholder="Search employee / department…  (/ to focus)"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </label>
       </div>
 
       <div className="list-switch" role="tablist" aria-label="Live tracking views">
@@ -603,7 +624,7 @@ export default function TrackingPage() {
               }
             }}
           />
-          <div className="break-type-stack">
+          <div className="break-type-stack tracking-break-stack">
             <div className={`break-type-focus ${activeType === BREAK_TYPES.MEAL ? 'is-active' : ''}`}>
               <BreakTypeBoard
                 title="Meal Break"

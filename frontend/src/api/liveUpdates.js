@@ -2,7 +2,7 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { useEffect, useRef } from 'react';
 
 function liveHubUrl() {
-  const api = import.meta.env.VITE_API_URL || 'http://localhost:5085/api';
+  const api = import.meta.env.DEV ? '/api' : (import.meta.env.VITE_API_URL || '/api');
   if (/^https?:\/\//i.test(api)) {
     return `${api.replace(/\/api\/?$/, '')}/hubs/live`;
   }
