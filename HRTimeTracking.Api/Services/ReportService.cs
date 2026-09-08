@@ -305,6 +305,13 @@ public class ReportService : IReportService
             roster = roster.Concat(extra).OrderBy(e => e.FullName).ToList();
         }
 
+        var storedAdjustments = await _db.BreakTimeAdjustments.AsNoTracking()
+            .Where(a => a.BreakDate >= from && a.BreakDate <= to)
+            .ToListAsync();
+        var adjMap = storedAdjustments
+            .GroupBy(a => (a.EmployeeId, a.BreakDate, Type: BreakTypes.Normalize(a.BreakType)))
+            .ToDictionary(g => g.Key, g => g.First().AdjustmentMinutes);
+
         var rows = new List<ReportRowDto>();
         foreach (var employee in roster)
         {
@@ -315,7 +322,7 @@ public class ReportService : IReportService
 
             if (!dayByDay)
             {
-                rows.Add(BuildDayRow(employee, empItems, from, now, limits));
+                rows.Add(BuildDayRow(employee, empItems, from, now, limits, adjMap));
                 continue;
             }
 
@@ -332,7 +339,7 @@ public class ReportService : IReportService
             foreach (var day in dates)
             {
                 var dayItems = byDay.GetValueOrDefault(day) ?? [];
-                rows.Add(BuildDayRow(employee, dayItems, day, now, limits));
+                rows.Add(BuildDayRow(employee, dayItems, day, now, limits, adjMap));
             }
         }
 
@@ -427,10 +434,17 @@ public class ReportService : IReportService
         IReadOnlyList<(BreakSession Session, ShiftPeriod Period)> items,
         DateOnly day,
         DateTime now,
-        ResolvedBreakLimitsDto limits)
+        ResolvedBreakLimitsDto limits,
+        IReadOnlyDictionary<(int EmployeeId, DateOnly Date, string Type), int> adjMap)
     {
         var meal = SumBreakType(items, BreakTypes.Meal, now, limits.MealLimitMinutes);
         var comfort = SumBreakType(items, BreakTypes.Comfort, now, limits.ComfortLimitMinutes);
+        var mealSeconds = BreakTimeAdjustmentMath.Apply(
+            meal.TotalSeconds, adjMap.GetValueOrDefault((employee.Id, day, BreakTypes.Meal)));
+        var comfortSeconds = BreakTimeAdjustmentMath.Apply(
+            comfort.TotalSeconds, adjMap.GetValueOrDefault((employee.Id, day, BreakTypes.Comfort)));
+        var (mealStatus, mealColor) = BreakStatusCodes.FromTotalSeconds(mealSeconds, limits.MealLimitMinutes);
+        var (comfortStatus, comfortColor) = BreakStatusCodes.FromTotalSeconds(comfortSeconds, limits.ComfortLimitMinutes);
 
         ShiftPeriod period;
         if (items.Count > 0)
@@ -447,15 +461,15 @@ public class ReportService : IReportService
             employee.Department?.Name ?? "—",
             employee.Shift?.Name,
             day,
-            comfort.TotalSeconds,
-            TimeDisplay.FormatSeconds(comfort.TotalSeconds),
-            comfort.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
-            comfort.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
+            comfortSeconds,
+            TimeDisplay.FormatSeconds(comfortSeconds),
+            comfortStatus,
+            comfortColor,
             comfort.Count,
-            meal.TotalSeconds,
-            TimeDisplay.FormatSeconds(meal.TotalSeconds),
-            meal.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
-            meal.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
+            mealSeconds,
+            TimeDisplay.FormatSeconds(mealSeconds),
+            mealStatus,
+            mealColor,
             meal.Count,
             period.Start,
             period.End,

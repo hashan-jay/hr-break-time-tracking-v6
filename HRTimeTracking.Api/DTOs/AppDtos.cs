@@ -171,7 +171,9 @@ public record EmployeeBreakStatusDto(
     DateTime? ShiftPeriodEnd = null,
     bool HasPasscode = false,
     int MealLimitMinutes = BreakStatusCodes.DefaultMealLimitMinutes,
-    int ComfortLimitMinutes = BreakStatusCodes.DefaultComfortLimitMinutes)
+    int ComfortLimitMinutes = BreakStatusCodes.DefaultComfortLimitMinutes,
+    int MealAdjustmentMinutes = 0,
+    int ComfortAdjustmentMinutes = 0)
 {
     public bool IsOnComfortBreak => IsOnBreak && CurrentBreakType == BreakTypes.Comfort;
     public bool IsOnMealBreak => IsOnBreak && CurrentBreakType == BreakTypes.Meal;
@@ -426,3 +428,35 @@ public record AuditReportDto(
     IReadOnlyList<AuditReportRowDto> Rows);
 
 public record ApiMessage(string Message);
+
+public record BreakTimeAdjustmentRowDto(
+    int EmployeeId,
+    string EmployeeCode,
+    string EmployeeName,
+    string DepartmentName,
+    string? ShiftName,
+    DateOnly Date,
+    string BreakType,
+    int LimitMinutes,
+    int RawTotalSeconds,
+    string RawTotalDisplay,
+    int DisplayedTotalSeconds,
+    string DisplayedTotalDisplay,
+    int AdjustmentMinutes,
+    int AttemptsUsed,
+    int AttemptsLeft,
+    bool CanAdjust);
+
+public record BreakTimeAdjustmentListDto(
+    DateOnly Date,
+    DateOnly MinDate,
+    DateOnly MaxDate,
+    int MealLimitMinutes,
+    int ComfortLimitMinutes,
+    IReadOnlyList<BreakTimeAdjustmentRowDto> Rows);
+
+public record SaveBreakTimeAdjustmentRequest(
+    [Required] int EmployeeId,
+    [Required] DateOnly Date,
+    [Required] string BreakType,
+    [Required] int DisplayedTotalSeconds);

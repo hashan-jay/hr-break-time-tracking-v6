@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ShiftDepartmentBreakLimit> ShiftDepartmentBreakLimits => Set<ShiftDepartmentBreakLimit>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<UserPermission> UserPermissions => Set<UserPermission>();
+    public DbSet<BreakTimeAdjustment> BreakTimeAdjustments => Set<BreakTimeAdjustment>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -142,6 +143,17 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(x => x.User)
                 .WithMany()
                 .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<BreakTimeAdjustment>(entity =>
+        {
+            entity.HasIndex(x => new { x.EmployeeId, x.BreakDate, x.BreakType }).IsUnique();
+            entity.Property(x => x.BreakType).HasMaxLength(20).IsRequired();
+            entity.Property(x => x.UpdatedByUserId).HasMaxLength(450);
+            entity.HasOne(x => x.Employee)
+                .WithMany()
+                .HasForeignKey(x => x.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

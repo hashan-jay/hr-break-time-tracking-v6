@@ -65,11 +65,23 @@ export function statusFromTotal(totalSeconds, limitMinutes) {
 export function shiftTotalSeconds(employee, breakType, nowMs) {
   const isMeal = breakType === BREAK_TYPES.MEAL;
   const closed = isMeal
-    ? (employee.mealClosedSeconds ?? Math.max(0, (employee.mealBreakSecondsToday || 0) - (employee.currentBreakElapsedSeconds || 0)))
-    : (employee.comfortClosedSeconds ?? Math.max(0, (employee.comfortBreakSecondsToday || 0) - (employee.currentBreakElapsedSeconds || 0)));
+    ? (employee.mealClosedSeconds ?? 0)
+    : (employee.comfortClosedSeconds ?? 0);
   const onThisBreak = employee.isOnBreak && employee.currentBreakType === breakType;
   const open = onThisBreak ? liveElapsedSeconds(employee.currentOutTime, nowMs, employee.shiftPeriodEnd) : 0;
-  return Math.max(0, closed + open);
+  const raw = closed + open;
+  let adjSeconds = Math.max(0, Number(
+    isMeal ? employee.mealAdjustmentMinutes : employee.comfortAdjustmentMinutes,
+  ) || 0) * 60;
+  if (adjSeconds <= 0) {
+    const serverTotal = Number(isMeal ? employee.mealBreakSecondsToday : employee.comfortBreakSecondsToday);
+    if (Number.isFinite(serverTotal)) {
+      const openAtFetch = onThisBreak ? (Number(employee.currentBreakElapsedSeconds) || 0) : 0;
+      const rawAtFetch = closed + openAtFetch;
+      if (rawAtFetch > serverTotal) adjSeconds = rawAtFetch - serverTotal;
+    }
+  }
+  return Math.max(0, raw - adjSeconds);
 }
 
 /** Recompute open-session elapsed against Meal or Comfort totals every tick. */

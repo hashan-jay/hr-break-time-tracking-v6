@@ -7,84 +7,110 @@ import PortalCredits from './PortalCredits';
 import { portalTitle, roleLabel } from '../lib/roles';
 import ThemeToggle from './ThemeToggle';
 
+function Icon({ children }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
 const ICONS = {
   portal: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-      <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1v-10.5z" />
-    </svg>
+    <Icon>
+      <path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+    </Icon>
   ),
   dashboard: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <rect x="3" y="3" width="7" height="9" rx="1.5" />
       <rect x="14" y="3" width="7" height="5" rx="1.5" />
       <rect x="14" y="12" width="7" height="9" rx="1.5" />
       <rect x="3" y="16" width="7" height="5" rx="1.5" />
-    </svg>
+    </Icon>
   ),
   tracking: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
-    </svg>
+    </Icon>
   ),
   employees: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="3.5" />
       <path d="M22 21v-2a3.5 3.5 0 0 0-2.5-3.35" />
       <path d="M16.5 3.7a3.5 3.5 0 0 1 0 6.6" />
-    </svg>
+    </Icon>
   ),
   departments: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <path d="M3 21h18" />
       <path d="M5 21V7l7-4 7 4v14" />
       <path d="M9 21v-6h6v6" />
-    </svg>
+    </Icon>
   ),
   reports: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <path d="M4 19V5" />
       <path d="M4 19h16" />
       <path d="M8 15v-4" />
       <path d="M12 15V8" />
       <path d="M16 15v-6" />
-    </svg>
+    </Icon>
   ),
   users: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5 20a7 7 0 0 1 14 0" />
-    </svg>
+    </Icon>
   ),
   settings: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.3.6.9 1 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
-    </svg>
+    </Icon>
   ),
   shifts: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3.5 2" />
-    </svg>
+    </Icon>
   ),
   audit: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <path d="M8 6h11" />
       <path d="M8 12h11" />
       <path d="M8 18h11" />
       <path d="M4 6h.01M4 12h.01M4 18h.01" />
-    </svg>
+    </Icon>
   ),
   passcodes: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+    <Icon>
       <rect x="4" y="10" width="16" height="10" rx="1.5" />
       <path d="M8 10V7a4 4 0 0 1 8 0v3" />
       <circle cx="12" cy="15" r="1.4" />
-    </svg>
+    </Icon>
   ),
 };
+
+function userInitials(name) {
+  const parts = String(name || '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length === 0) return 'HR';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
 
 function SidebarNav({ items, onNavigate }) {
   return (
@@ -94,13 +120,14 @@ function SidebarNav({ items, onNavigate }) {
           key={item.to}
           to={item.to}
           end={item.end}
+          title={item.label}
           className={({ isActive }) =>
             ['portal-nav__link', isActive ? 'is-active' : ''].filter(Boolean).join(' ')
           }
           onClick={onNavigate}
         >
           <span className="portal-nav__icon">{item.icon}</span>
-          <span>{item.label}</span>
+          <span className="portal-nav__label">{item.label}</span>
         </NavLink>
       ))}
     </nav>
@@ -109,11 +136,11 @@ function SidebarNav({ items, onNavigate }) {
 
 function StaffSidebar({ user, items, onLogout, onNavigate }) {
   return (
-    <aside className="portal-side">
+    <aside className="portal-side portal-side--ig">
       <div className="portal-brand">
-        <div>
+        <span className="portal-brand__mark" aria-hidden="true">BT</span>
+        <div className="portal-brand__text">
           <div className="portal-brand__title">{portalTitle(user?.roles)}</div>
-          <div className="portal-brand__sub">BreakTime</div>
         </div>
       </div>
 
@@ -124,11 +151,19 @@ function StaffSidebar({ user, items, onLogout, onNavigate }) {
         <PortalClock />
         <div className="portal-side__footer">
           <div className="portal-user">
-            <strong>{user?.fullName}</strong>
-            <span>{roleLabel(user?.roles)}</span>
+            <span className="portal-user__avatar" aria-hidden="true">{userInitials(user?.fullName)}</span>
+            <div className="portal-user__meta">
+              <strong>{user?.fullName}</strong>
+              <span>{roleLabel(user?.roles)}</span>
+            </div>
           </div>
           <button type="button" className="portal-logout" onClick={onLogout}>
-            Logout
+            <svg className="portal-logout__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <path d="M16 17l5-5-5-5" />
+              <path d="M21 12H9" />
+            </svg>
+            <span className="portal-logout__label">Logout</span>
           </button>
           <PortalCredits />
         </div>

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 import { useFeedback } from '../feedback/FeedbackContext';
 import { settingLabel } from '../lib/breakHelpers';
+import AdjustTimeSection from '../components/AdjustTimeSection';
 
 const DURATION_KEYS = ['MealBreakLimitMinutes', 'ComfortBreakLimitMinutes'];
 const START_KEYS = ['MealBreakStartLimit', 'ComfortBreakStartLimit'];
@@ -36,6 +38,7 @@ function rowKey(shiftId, departmentId) {
 
 export default function SettingsPage() {
   const { toast } = useFeedback();
+  const { isDeveloper } = useAuth();
   const [settings, setSettings] = useState([]);
   const [shiftGroups, setShiftGroups] = useState([]);
   const [savingKey, setSavingKey] = useState(null);
@@ -209,6 +212,17 @@ export default function SettingsPage() {
             <span className="list-switch__count">{other.length}</span>
           </button>
         )}
+        {isDeveloper && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={listView === 'adjust-time'}
+            className={`list-switch__btn${listView === 'adjust-time' ? ' is-active' : ''}`}
+            onClick={() => setListView('adjust-time')}
+          >
+            Adjust Time
+          </button>
+        )}
       </div>
 
       {listView === 'defaults' && (
@@ -353,6 +367,10 @@ export default function SettingsPage() {
         <section className="settings-list">
           <p className="hint">No shifts found. Create shifts and departments first, then configure limits here.</p>
         </section>
+      )}
+
+      {listView === 'adjust-time' && isDeveloper && (
+        <AdjustTimeSection />
       )}
 
       {listView === 'other' && other.length > 0 && (

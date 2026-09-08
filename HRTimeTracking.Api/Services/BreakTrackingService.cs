@@ -93,6 +93,13 @@ public class BreakTrackingService : IBreakTrackingService
                 session.BreakType = BreakTypes.Comfort;
         }
 
+        var adjDates = Enumerable.Range(0, 4).Select(offset => today.AddDays(-offset)).ToArray();
+        var adjustments = employeeIds.Count == 0
+            ? new List<BreakTimeAdjustment>()
+            : await _db.BreakTimeAdjustments.AsNoTracking()
+                .Where(a => employeeIds.Contains(a.EmployeeId) && adjDates.Contains(a.BreakDate))
+                .ToListAsync();
+
         var statuses = employees.Select(e =>
         {
             var employeeSessions = sessions.Where(s => s.EmployeeId == e.Id).ToList();
@@ -105,6 +112,7 @@ public class BreakTrackingService : IBreakTrackingService
                 comfortStartLimit,
                 mealLimit,
                 comfortLimit);
+            var day = livePeriod?.StartDate ?? today;
             return BuildStatus(
                 e,
                 employeeSessions,
@@ -113,7 +121,9 @@ public class BreakTrackingService : IBreakTrackingService
                 resolved.MealLimitMinutes,
                 livePeriod,
                 resolved.MealStartLimit,
-                resolved.ComfortStartLimit);
+                resolved.ComfortStartLimit,
+                LookupAdjustment(adjustments, e.Id, day, BreakTypes.Meal),
+                LookupAdjustment(adjustments, e.Id, day, BreakTypes.Comfort));
         }).ToList();
 
         DateTime? periodStart = null;
@@ -187,6 +197,10 @@ public class BreakTrackingService : IBreakTrackingService
         }
 
         var inPeriod = sessions.Where(s => livePeriod is null || ShiftWindow.StartedIn(s.OutTime, livePeriod.Value) || s.InTime is null).ToList();
+        var day = livePeriod?.StartDate ?? TimeDisplay.TodayLocal();
+        var adjustments = await _db.BreakTimeAdjustments.AsNoTracking()
+            .Where(a => a.EmployeeId == employeeId && a.BreakDate == day)
+            .ToListAsync();
         return BuildStatus(
             employee,
             inPeriod,
@@ -195,7 +209,9 @@ public class BreakTrackingService : IBreakTrackingService
             limits.MealLimitMinutes,
             livePeriod,
             limits.MealStartLimit,
-            limits.ComfortStartLimit);
+            limits.ComfortStartLimit,
+            LookupAdjustment(adjustments, employeeId, day, BreakTypes.Meal),
+            LookupAdjustment(adjustments, employeeId, day, BreakTypes.Comfort));
     }
 
     public async Task<(bool Ok, string? Error, EmployeeBreakStatusDto? Data)> ToggleAsync(int employeeId, string breakType, string? userId)
@@ -381,6 +397,17 @@ public class BreakTrackingService : IBreakTrackingService
             b.IsAutoClosed);
     }
 
+    private static int LookupAdjustment(
+        IEnumerable<BreakTimeAdjustment> rows,
+        int employeeId,
+        DateOnly day,
+        string breakType)
+        => rows.FirstOrDefault(a =>
+            a.EmployeeId == employeeId
+            && a.BreakDate == day
+            && breakType.Equals(a.BreakType, StringComparison.OrdinalIgnoreCase))
+            ?.AdjustmentMinutes ?? 0;
+
     private static EmployeeBreakStatusDto BuildStatus(
         Employee employee,
         List<BreakSession> sessions,
@@ -389,7 +416,9 @@ public class BreakTrackingService : IBreakTrackingService
         int mealLimitMinutes,
         ShiftPeriod? livePeriod,
         int mealStartLimit,
-        int comfortStartLimit)
+        int comfortStartLimit,
+        int mealAdjustmentMinutes = 0,
+        int comfortAdjustmentMinutes = 0)
     {
         var localNow = TimeDisplay.AsLocal(now);
         var withinShift = livePeriod.HasValue;
@@ -429,8 +458,8 @@ public class BreakTrackingService : IBreakTrackingService
                 comfortClosed += openSeconds;
         }
 
-        var comfortTotal = comfortClosed + comfortOpen;
-        var mealTotal = mealClosed + mealOpen;
+        var comfortTotal = BreakTimeAdjustmentMath.Apply(comfortClosed + comfortOpen, comfortAdjustmentMinutes);
+        var mealTotal = BreakTimeAdjustmentMath.Apply(mealClosed + mealOpen, mealAdjustmentMinutes);
         var (comfortStatus, comfortColor) = BreakStatusCodes.FromTotalSeconds(comfortTotal, comfortLimitMinutes);
         var (mealStatus, mealColor) = BreakStatusCodes.FromTotalSeconds(mealTotal, mealLimitMinutes);
         DateTime? shiftPeriodEnd = closeAt ?? livePeriod?.End;
@@ -474,7 +503,9 @@ public class BreakTrackingService : IBreakTrackingService
             shiftPeriodEnd,
             !string.IsNullOrEmpty(employee.PasscodeHash),
             mealLimitMinutes,
-            comfortLimitMinutes);
+            comfortLimitMinutes,
+            mealAdjustmentMinutes,
+            comfortAdjustmentMinutes);
     }
 
     private static ResolvedBreakLimitsDto ResolveLimits(
