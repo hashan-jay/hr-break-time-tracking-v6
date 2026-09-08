@@ -3708,6 +3708,186 @@ html[data-theme="dark"] .onbreak-now__timer {
   color: #fff;
 }
 
+.app-portal.login-screen.login-screen--ig {
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  background: linear-gradient(160deg, #f7fee7 0%, #ecfccb 46%, #d9f99d 100%);
+  background-attachment: fixed;
+}
+
+.login-ig {
+  width: min(24.5rem, 100%);
+  display: grid;
+  gap: 0.65rem;
+}
+
+.login-ig__card {
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  padding: 2rem 2.15rem 1.5rem;
+  box-shadow: none;
+}
+
+.login-ig__wordmark {
+  margin: 0 0 0.2rem;
+  text-align: center;
+  font-family: "Syne", "Montserrat", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #262626;
+}
+
+.login-ig__subbrand {
+  margin: 0 0 1.15rem;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #737373;
+}
+
+.login-ig__title {
+  margin: 0 0 0.25rem;
+  text-align: center;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #262626;
+}
+
+.login-screen--ig .login-hint {
+  text-align: center;
+  margin-bottom: 1.1rem;
+  color: #737373;
+}
+
+.login-ig__form {
+  padding: 0;
+  gap: 0.7rem;
+  background: transparent;
+}
+
+.login-screen--ig .login-form label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #737373;
+}
+
+.login-screen--ig .login-form input {
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  padding: 0.7rem 0.75rem;
+  background: #fafafa;
+  color: #262626;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+}
+
+.login-screen--ig .login-form input:focus {
+  outline: none;
+  border-color: #a8a8a8;
+  background: #fff;
+}
+
+.login-ig__submit,
+.login-screen--ig .login-form .btn-primary {
+  width: 100%;
+  margin-top: 0.35rem;
+  min-height: 2.35rem;
+  border: 0;
+  border-radius: 8px;
+  background: #120a8f;
+  color: #fff;
+  font-family: "Montserrat", "Segoe UI", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transform: none;
+}
+
+.login-screen--ig .login-form .btn-primary:hover {
+  background: #0c0766;
+  transform: none;
+}
+
+.login-ig__usernames {
+  margin: 1.1rem 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: #737373;
+}
+
+.login-ig__card--meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.05rem 1.25rem;
+}
+
+.login-ig__card--meta p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #262626;
+}
+
+.login-ig__back {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #120a8f;
+  text-decoration: none;
+}
+
+.login-ig__back:hover {
+  color: #0c0766;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+html[data-theme="dark"] .app-portal.login-screen.login-screen--ig {
+  background: linear-gradient(160deg, #0f1a10 0%, #14532d 46%, #052e16 100%);
+  background-attachment: fixed;
+}
+
+html[data-theme="dark"] .login-ig__card {
+  background: #121212;
+  border-color: #363636;
+}
+
+html[data-theme="dark"] .login-ig__wordmark,
+html[data-theme="dark"] .login-ig__title,
+html[data-theme="dark"] .login-ig__card--meta p {
+  color: #f5f5f5;
+}
+
+html[data-theme="dark"] .login-ig__subbrand,
+html[data-theme="dark"] .login-screen--ig .login-hint,
+html[data-theme="dark"] .login-ig__usernames,
+html[data-theme="dark"] .login-screen--ig .login-form label {
+  color: #a8a8a8;
+}
+
+html[data-theme="dark"] .login-screen--ig .login-form input {
+  background: #262626;
+  border-color: #363636;
+  color: #f5f5f5;
+}
+
+html[data-theme="dark"] .login-screen--ig .login-form input:focus {
+  border-color: #a8a8a8;
+  background: #1a1a1a;
+}
+
+html[data-theme="dark"] .login-ig__submit,
+html[data-theme="dark"] .login-screen--ig .login-form .btn-primary {
+  background: #120a8f;
+  color: #fff;
+}
+
+html[data-theme="dark"] .login-ig__back {
+  color: #7c75ff;
+}
+
 .login-form {
   padding: 2rem;
   display: grid;
