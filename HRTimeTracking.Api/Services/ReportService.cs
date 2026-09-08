@@ -266,9 +266,7 @@ public class ReportService : IReportService
         }
 
         var now = TimeDisplay.NowLocal();
-        var periodLabel = from == to ? from.ToString("yyyy-MM-dd") : $"{from:yyyy-MM-dd} to {to:yyyy-MM-dd}";
-        var rangeStart = from.ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
-        var rangeEnd = to.AddDays(1).ToDateTime(TimeOnly.MinValue, DateTimeKind.Local);
+        var dayByDay = from < to;
 
         var inRange = new List<(BreakSession Session, ShiftPeriod Period)>();
         foreach (var session in sessions)
@@ -307,60 +305,48 @@ public class ReportService : IReportService
             roster = roster.Concat(extra).OrderBy(e => e.FullName).ToList();
         }
 
-        var rows = roster.Select(employee =>
+        var rows = new List<ReportRowDto>();
+        foreach (var employee in roster)
         {
             var empItems = sessionsByEmployee.GetValueOrDefault(employee.Id) ?? [];
-            ResolvedBreakLimitsDto limits;
-            if (employee.ShiftId.HasValue &&
-                limitsMap.TryGetValue((employee.ShiftId.Value, employee.DepartmentId), out var resolved))
+            var limits = ResolveLimits(
+                employee, limitsMap, deptStartLimits,
+                mealStartLimit, comfortStartLimit, mealMinutesDefault, comfortMinutesDefault);
+
+            if (!dayByDay)
             {
-                limits = resolved;
-            }
-            else
-            {
-                var dept = deptStartLimits.TryGetValue(employee.DepartmentId, out var starts)
-                    ? starts
-                    : (Meal: mealStartLimit, Comfort: comfortStartLimit);
-                limits = new ResolvedBreakLimitsDto(
-                    dept.Meal,
-                    dept.Comfort,
-                    mealMinutesDefault,
-                    comfortMinutesDefault);
+                rows.Add(BuildDayRow(employee, empItems, from, now, limits));
+                continue;
             }
 
-            var meal = SumBreakType(empItems, BreakTypes.Meal, now, limits.MealLimitMinutes);
-            var comfort = SumBreakType(empItems, BreakTypes.Comfort, now, limits.ComfortLimitMinutes);
+            var byDay = empItems
+                .GroupBy(x => x.Period.StartDate)
+                .ToDictionary(g => g.Key, g => g.ToList());
 
-            return new ReportRowDto(
-                employee.Id,
-                employee.EmployeeCode,
-                employee.FullName,
-                employee.Department?.Name ?? "—",
-                employee.Shift?.Name,
-                from,
-                comfort.TotalSeconds,
-                TimeDisplay.FormatSeconds(comfort.TotalSeconds),
-                comfort.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
-                comfort.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
-                comfort.Count,
-                meal.TotalSeconds,
-                TimeDisplay.FormatSeconds(meal.TotalSeconds),
-                meal.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
-                meal.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
-                meal.Count,
-                rangeStart,
-                rangeEnd,
-                periodLabel);
-        })
-        .OrderBy(r => r.EmployeeName)
-        .ToList();
+            // A named employee gets every selected day so a monthly report is complete.
+            // Otherwise list only days that have break records.
+            var dates = employeeId.HasValue
+                ? EachDate(from, to)
+                : byDay.Keys.OrderBy(d => d).ToList();
+
+            foreach (var day in dates)
+            {
+                var dayItems = byDay.GetValueOrDefault(day) ?? [];
+                rows.Add(BuildDayRow(employee, dayItems, day, now, limits));
+            }
+        }
+
+        rows = rows
+            .OrderBy(r => r.EmployeeName)
+            .ThenBy(r => r.Date)
+            .ToList();
 
         return new ReportSummaryDto(
             from,
             to,
             comfortLimit,
             mealLimit,
-            rows.Count,
+            rows.Select(r => r.EmployeeId).Distinct().Count(),
             rows.Count(r => r.ComfortStatus == BreakStatusCodes.WellSatisfied),
             0,
             rows.Count(r => r.ComfortStatus == BreakStatusCodes.Exceeded),
@@ -401,5 +387,78 @@ public class ReportService : IReportService
         }
 
         return (total, typed.Count, exceeded);
+    }
+
+    private static IReadOnlyList<DateOnly> EachDate(DateOnly from, DateOnly to)
+    {
+        var dates = new List<DateOnly>();
+        for (var day = from; day <= to; day = day.AddDays(1))
+            dates.Add(day);
+        return dates;
+    }
+
+    private static ResolvedBreakLimitsDto ResolveLimits(
+        Employee employee,
+        IReadOnlyDictionary<(int ShiftId, int DepartmentId), ResolvedBreakLimitsDto> limitsMap,
+        IReadOnlyDictionary<int, (int Meal, int Comfort)> deptStartLimits,
+        int mealStartLimit,
+        int comfortStartLimit,
+        int mealMinutesDefault,
+        int comfortMinutesDefault)
+    {
+        if (employee.ShiftId.HasValue &&
+            limitsMap.TryGetValue((employee.ShiftId.Value, employee.DepartmentId), out var resolved))
+        {
+            return resolved;
+        }
+
+        var dept = deptStartLimits.TryGetValue(employee.DepartmentId, out var starts)
+            ? starts
+            : (Meal: mealStartLimit, Comfort: comfortStartLimit);
+        return new ResolvedBreakLimitsDto(
+            dept.Meal,
+            dept.Comfort,
+            mealMinutesDefault,
+            comfortMinutesDefault);
+    }
+
+    private static ReportRowDto BuildDayRow(
+        Employee employee,
+        IReadOnlyList<(BreakSession Session, ShiftPeriod Period)> items,
+        DateOnly day,
+        DateTime now,
+        ResolvedBreakLimitsDto limits)
+    {
+        var meal = SumBreakType(items, BreakTypes.Meal, now, limits.MealLimitMinutes);
+        var comfort = SumBreakType(items, BreakTypes.Comfort, now, limits.ComfortLimitMinutes);
+
+        ShiftPeriod period;
+        if (items.Count > 0)
+            period = items[0].Period;
+        else if (employee.Shift is not null)
+            period = ShiftWindow.StartingOn(employee.Shift, day);
+        else
+            period = ShiftWindow.CalendarDay(day);
+
+        return new ReportRowDto(
+            employee.Id,
+            employee.EmployeeCode,
+            employee.FullName,
+            employee.Department?.Name ?? "—",
+            employee.Shift?.Name,
+            day,
+            comfort.TotalSeconds,
+            TimeDisplay.FormatSeconds(comfort.TotalSeconds),
+            comfort.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
+            comfort.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
+            comfort.Count,
+            meal.TotalSeconds,
+            TimeDisplay.FormatSeconds(meal.TotalSeconds),
+            meal.Exceeded ? BreakStatusCodes.Exceeded : BreakStatusCodes.WellSatisfied,
+            meal.Exceeded ? BreakStatusCodes.ColorRed : BreakStatusCodes.ColorGreen,
+            meal.Count,
+            period.Start,
+            period.End,
+            day.ToString("yyyy-MM-dd"));
     }
 }

@@ -155,6 +155,7 @@ public interface IEmployeeService
     Task<EmployeeDto?> GetByIdAsync(int id);
     Task<(bool Ok, string? Error, EmployeeDto? Data)> CreateAsync(CreateEmployeeRequest request, string? userId);
     Task<(bool Ok, string? Error, EmployeeDto? Data)> UpdateAsync(int id, UpdateEmployeeRequest request, string? userId);
+    Task<EmployeeCodeStatusDto> CheckCodeAsync(string? code, int? excludeId);
     Task<(bool Ok, string? Error, EmployeeDto? Data)> DeactivateAsync(int id, string? userId);
     Task<(bool Ok, string? Error, EmployeeDto? Data)> ActivateAsync(int id, string? userId);
     Task<(bool Ok, string? Error)> DeleteAsync(int id, string? userId);
@@ -233,8 +234,8 @@ public class EmployeeService : IEmployeeService
     public async Task<(bool Ok, string? Error, EmployeeDto? Data)> CreateAsync(CreateEmployeeRequest request, string? userId)
     {
         var code = request.EmployeeCode.Trim();
-        if (await _db.Employees.AnyAsync(e => e.EmployeeCode == code))
-            return (false, "Employee code already exists, including among deactivated employees. Activate that employee instead.", null);
+        var codeError = await CodeTakenMessageAsync(code, excludeId: null);
+        if (codeError is not null) return (false, codeError, null);
 
         var dept = await _db.Departments.FirstOrDefaultAsync(d => d.Id == request.DepartmentId && !d.IsDeleted);
         if (dept is null) return (false, "Department not found.", null);
@@ -264,21 +265,68 @@ public class EmployeeService : IEmployeeService
         if (entity is null) return (false, "Employee not found.", null);
         if (entity.IsDeleted) return (false, "This employee is deactivated. Activate them before editing.", null);
 
+        var code = request.EmployeeCode.Trim();
+        if (string.IsNullOrWhiteSpace(code))
+            return (false, "Employee code is required.", null);
+
+        var codeError = await CodeTakenMessageAsync(code, excludeId: id);
+        if (codeError is not null) return (false, codeError, null);
+
         var deptExists = await _db.Departments.AnyAsync(d => d.Id == request.DepartmentId && !d.IsDeleted);
         if (!deptExists) return (false, "Department not found.", null);
 
         var shiftError = await ValidateShiftAsync(request.ShiftId);
         if (shiftError is not null) return (false, shiftError, null);
 
+        var previousCode = entity.EmployeeCode;
+        entity.EmployeeCode = code;
         entity.FullName = request.FullName.Trim();
         entity.DepartmentId = request.DepartmentId;
         entity.ShiftId = request.ShiftId;
         entity.HireDate = request.HireDate;
         entity.UpdatedAt = DateTime.UtcNow;
-        await _db.SaveChangesAsync();
-        await _audit.LogAsync(userId, "Update", "Employee", entity.Id.ToString(), $"Updated employee '{entity.FullName}'.");
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (IsEmployeeCodeConflict(ex))
+        {
+            return (false, "This code is used by another user.", null);
+        }
+        var audit = !string.Equals(previousCode, entity.EmployeeCode, StringComparison.OrdinalIgnoreCase)
+            ? $"Updated employee '{entity.FullName}' (code {previousCode} → {entity.EmployeeCode})."
+            : $"Updated employee '{entity.FullName}'.";
+        await _audit.LogAsync(userId, "Update", "Employee", entity.Id.ToString(), audit);
         await _liveUpdates.NotifyAsync("employees");
         return (true, null, await GetByIdAsync(entity.Id));
+    }
+
+    public async Task<EmployeeCodeStatusDto> CheckCodeAsync(string? code, int? excludeId)
+    {
+        var trimmed = (code ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(trimmed))
+            return new EmployeeCodeStatusDto(true, null);
+
+        var message = await CodeTakenMessageAsync(trimmed, excludeId);
+        return message is null
+            ? new EmployeeCodeStatusDto(true, null)
+            : new EmployeeCodeStatusDto(false, message);
+    }
+
+    private async Task<string?> CodeTakenMessageAsync(string code, int? excludeId)
+    {
+        var key = code.ToLower();
+        var taken = await _db.Employees.AsNoTracking().AnyAsync(e =>
+            e.EmployeeCode.ToLower() == key
+            && (!excludeId.HasValue || e.Id != excludeId.Value));
+        return taken ? "This code is used by another user." : null;
+    }
+
+    private static bool IsEmployeeCodeConflict(DbUpdateException ex)
+    {
+        var text = ex.InnerException?.Message ?? ex.Message;
+        return text.Contains("IX_Employees_EmployeeCode", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("EmployeeCode", StringComparison.OrdinalIgnoreCase);
     }
 
     private async Task<string?> ValidateShiftAsync(int? shiftId)

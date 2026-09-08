@@ -20,6 +20,10 @@ export default function ShiftsPage() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
+  const [listView, setListView] = useState('active');
+  const activeItems = useMemo(() => items.filter((s) => s.isActive), [items]);
+  const inactiveItems = useMemo(() => items.filter((s) => !s.isActive), [items]);
+  const visibleItems = listView === 'inactive' ? inactiveItems : activeItems;
 
   const previewLabel = useMemo(() => {
     if (!form.startTime || !form.endTime) return '';
@@ -89,13 +93,48 @@ export default function ShiftsPage() {
   };
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header">
         <div>
           <h1>Shifts</h1>
           <p>Define military-time work shifts (30-minute steps). Overnight shifts are supported (e.g. 19:30 – 07:30).</p>
         </div>
+        <div className="header-stat-tiles">
+          <div className="header-stat-tiles__row">
+            <article className="header-stat-tile">
+              <span>Active</span>
+              <strong>{activeItems.length}</strong>
+            </article>
+            <article className="header-stat-tile">
+              <span>Inactive</span>
+              <strong>{inactiveItems.length}</strong>
+            </article>
+          </div>
+        </div>
       </header>
+
+      <div className="list-switch" role="tablist" aria-label="Shift lists">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={listView === 'active'}
+          className={`list-switch__btn${listView === 'active' ? ' is-active' : ''}`}
+          onClick={() => setListView('active')}
+        >
+          Active
+          <span className="list-switch__count">{activeItems.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={listView === 'inactive'}
+          className={`list-switch__btn${listView === 'inactive' ? ' is-active' : ''}`}
+          onClick={() => setListView('inactive')}
+        >
+          Inactive
+          <span className="list-switch__count">{inactiveItems.length}</span>
+        </button>
+      </div>
 
       <div className="split-forms">
         <form className="card-form" onSubmit={onSubmit}>
@@ -137,7 +176,22 @@ export default function ShiftsPage() {
           </div>
         </form>
 
-        <div className="table-wrap">
+        <section className="list-panel">
+          <header className="list-panel__head">
+            <div>
+              <h2>{listView === 'inactive' ? 'Inactive shifts' : 'Active shifts'}</h2>
+              <p className="list-panel__hint">
+                {listView === 'inactive'
+                  ? 'Kept on existing employees, but cannot be newly selected.'
+                  : 'Available for employee assignment and live tracking.'}
+              </p>
+            </div>
+            <span className="header-stat-tile">
+              <span>{listView === 'inactive' ? 'Inactive' : 'Active'}</span>
+              <strong>{visibleItems.length}</strong>
+            </span>
+          </header>
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -151,7 +205,7 @@ export default function ShiftsPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((s) => (
+              {visibleItems.map((s) => (
                 <tr key={s.id}>
                   <td>{s.name}</td>
                   <td>{s.startTime}</td>
@@ -167,12 +221,17 @@ export default function ShiftsPage() {
                   </td>
                 </tr>
               ))}
-              {!items.length && (
-                <tr><td colSpan={7} className="empty">No shifts yet. Create the first shift.</td></tr>
+              {!visibleItems.length && (
+                <tr>
+                  <td colSpan={7} className="empty">
+                    {listView === 'inactive' ? 'No inactive shifts.' : 'No shifts yet. Create the first shift.'}
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
-        </div>
+          </div>
+        </section>
       </div>
     </div>
   );

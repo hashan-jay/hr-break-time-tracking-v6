@@ -102,7 +102,7 @@ export default function BreakReportDocument({ report, filters }) {
           </thead>
           <tbody>
             {(report.rows || []).map((r) => (
-              <tr key={r.employeeId}>
+              <tr key={`${r.employeeId}-${r.date}-${r.periodLabel || ''}`}>
                 <td>{periodText(r)}</td>
                 <td>{r.employeeCode}</td>
                 <td>{r.employeeName}</td>
@@ -126,8 +126,8 @@ export default function BreakReportDocument({ report, filters }) {
       <footer className="break-report-document__footer">
         Meal limit: {report.mealLimitMinutes} min · Comfort limit:{' '}
         {report.comfortLimitMinutes} min.
-        One row per employee. Totals are the Meal and Comfort time in the selected period.
-        Status is EXCEEDED if any shift in that period went over the limit.
+        A date range lists one row per employee per day. Totals are that day's Meal and Comfort time.
+        Status is EXCEEDED if that day's total went over the daily limit.
       </footer>
     </div>
   );
@@ -172,6 +172,7 @@ export function renderBreakReportHtml(report, filters) {
       <div class="kpi"><strong>${report.comfortWellSatisfiedCount}</strong><span>Comfort WELL SATISFIED</span></div>
       <div class="kpi"><strong>${report.comfortExceededCount}</strong><span>Comfort EXCEEDED BREAK TIME LIMIT</span></div>
     </div>
+    <h3>Employee break totals</h3>
     <table>
       <thead>
         <tr>
@@ -185,8 +186,8 @@ export function renderBreakReportHtml(report, filters) {
     </table>
     <div class="footer">
       Meal limit: ${report.mealLimitMinutes} min · Comfort limit: ${report.comfortLimitMinutes} min.
-      One row per employee. Totals are the Meal and Comfort time in the selected period.
-      Status is EXCEEDED if any shift in that period went over the limit.
+      A date range lists one row per employee per day. Totals are that day's Meal and Comfort time.
+      Status is EXCEEDED if that day's total went over the daily limit.
     </div>
   `;
 }

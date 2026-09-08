@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import api, { apiErrorMessage } from '../api/client';
-import AuditReportDocument, { renderAuditReportHtml } from '../components/AuditReportDocument';
-import { downloadHtmlReport } from '../lib/downloadReport';
+import { renderAuditReportHtml } from '../components/AuditReportDocument';
+import { downloadHtmlReport, printHtmlReport } from '../lib/downloadReport';
 import { useFeedback } from '../feedback/FeedbackContext';
 
 const todayIso = () => {
@@ -88,13 +88,13 @@ export default function AuditPage() {
 
   const printA4 = () => {
     if (!report) return;
-    document.body.classList.add('printing-audit-report');
-    window.print();
-    window.addEventListener(
-      'afterprint',
-      () => document.body.classList.remove('printing-audit-report'),
-      { once: true },
+    const opened = printHtmlReport(
+      `audit-report-${from}-to-${to}`,
+      renderAuditReportHtml(report),
     );
+    if (!opened) {
+      toast.error('Could not open the print dialog. Use Save HTML instead.');
+    }
   };
 
   const saveHtml = () => {
@@ -106,7 +106,7 @@ export default function AuditPage() {
   };
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header no-print">
         <div>
           <h1>Audit Log</h1>
@@ -140,7 +140,19 @@ export default function AuditPage() {
       </div>
 
       {report && (
-        <>
+        <section className="staff-results headlines-card no-print">
+          <header className="list-panel__head">
+            <div>
+              <h2>Audit results</h2>
+              <p className="list-panel__hint">
+                {report.from === report.to ? report.from : `${report.from} → ${report.to}`}
+              </p>
+            </div>
+            <span className="header-stat-tile">
+              <span>Entries</span>
+              <strong>{report.totalEntries}</strong>
+            </span>
+          </header>
           <div className="stats-grid compact no-print">
             <div className="stat-card">
               <div className="stat-value">{report.totalEntries}</div>
@@ -219,11 +231,7 @@ export default function AuditPage() {
               </tbody>
             </table>
           </div>
-
-          <div className="break-report-print-source print-only audit-report-print-source" aria-hidden="true">
-            <AuditReportDocument report={report} />
-          </div>
-        </>
+        </section>
       )}
     </div>
   );

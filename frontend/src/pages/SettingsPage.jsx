@@ -40,6 +40,7 @@ export default function SettingsPage() {
   const [shiftGroups, setShiftGroups] = useState([]);
   const [savingKey, setSavingKey] = useState(null);
   const [savingShiftId, setSavingShiftId] = useState(null);
+  const [listView, setListView] = useState('shifts');
 
   const load = async () => {
     const [settingsRes, shiftRes] = await Promise.all([
@@ -159,26 +160,83 @@ export default function SettingsPage() {
     });
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header">
         <div>
           <h1>System Settings</h1>
           <p>Configure Meal and Comfort break limits by shift and department.</p>
         </div>
+        <div className="header-stat-tiles">
+          <div className="header-stat-tiles__row">
+            <article className="header-stat-tile">
+              <span>Shifts</span>
+              <strong>{shiftGroups.length}</strong>
+            </article>
+          </div>
+        </div>
       </header>
 
-      <section className="settings-list">
-        <h2 className="settings-section-title">Default duration limits</h2>
-        <p className="hint">
-          Used when seeding new shift–department combinations. Existing configured rows keep their
-          values until you change them below.
-        </p>
-        {duration.map((s) => (
-          <SettingRow key={s.id} setting={s} min={1} max={240} onChange={updateLocal} onSave={save} />
-        ))}
-      </section>
+      <div className="list-switch" role="tablist" aria-label="Settings sections">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={listView === 'shifts'}
+          className={`list-switch__btn${listView === 'shifts' ? ' is-active' : ''}`}
+          onClick={() => setListView('shifts')}
+        >
+          By shift
+          <span className="list-switch__count">{shiftGroups.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={listView === 'defaults'}
+          className={`list-switch__btn${listView === 'defaults' ? ' is-active' : ''}`}
+          onClick={() => setListView('defaults')}
+        >
+          Defaults
+          <span className="list-switch__count">{duration.length + starts.length}</span>
+        </button>
+        {other.length > 0 && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={listView === 'other'}
+            className={`list-switch__btn${listView === 'other' ? ' is-active' : ''}`}
+            onClick={() => setListView('other')}
+          >
+            Other
+            <span className="list-switch__count">{other.length}</span>
+          </button>
+        )}
+      </div>
 
-      {shiftGroups.map((group) => (
+      {listView === 'defaults' && (
+        <>
+          <section className="settings-list">
+            <h2 className="settings-section-title">Default duration limits</h2>
+            <p className="hint">
+              Used when seeding new shift–department combinations. Existing configured rows keep their
+              values until you change them below.
+            </p>
+            {duration.map((s) => (
+              <SettingRow key={s.id} setting={s} min={1} max={240} onChange={updateLocal} onSave={save} />
+            ))}
+          </section>
+          <section className="settings-list">
+            <h2 className="settings-section-title">Default start limits for new departments</h2>
+            <p className="hint">
+              Used when a new department or shift–department row is created. Existing configured rows
+              keep their values until you change them on the By shift tab.
+            </p>
+            {starts.map((s) => (
+              <SettingRow key={s.id} setting={s} min={1} max={20} onChange={updateLocal} onSave={save} />
+            ))}
+          </section>
+        </>
+      )}
+
+      {listView === 'shifts' && shiftGroups.map((group) => (
         <section className="settings-list" key={group.shiftId}>
           <div className="settings-shift-head">
             <div>
@@ -291,24 +349,13 @@ export default function SettingsPage() {
         </section>
       ))}
 
-      {shiftGroups.length === 0 && (
+      {listView === 'shifts' && shiftGroups.length === 0 && (
         <section className="settings-list">
           <p className="hint">No shifts found. Create shifts and departments first, then configure limits here.</p>
         </section>
       )}
 
-      <section className="settings-list">
-        <h2 className="settings-section-title">Default start limits for new departments</h2>
-        <p className="hint">
-          Used when a new department or shift–department row is created. Existing configured rows
-          keep their values until you change them above.
-        </p>
-        {starts.map((s) => (
-          <SettingRow key={s.id} setting={s} min={1} max={20} onChange={updateLocal} onSave={save} />
-        ))}
-      </section>
-
-      {other.length > 0 && (
+      {listView === 'other' && other.length > 0 && (
         <section className="settings-list">
           <h2 className="settings-section-title">Other settings</h2>
           {other.map((s) => (

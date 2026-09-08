@@ -981,38 +981,9 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   grid-template-columns: minmax(9rem, 13rem) minmax(9rem, 13rem) minmax(9rem, 13rem) minmax(14rem, 1fr);
 }
 
-.tracking-page .list-switch {
-  border: 1px solid var(--ig-line);
-  background: var(--ig-card);
-  border-radius: 999px;
-  box-shadow: var(--ig-shadow);
-  font-family: var(--ig-font);
-}
-
+.tracking-page .list-switch,
 .tracking-page .list-switch__btn {
-  border-radius: 999px;
   font-family: var(--ig-font);
-  color: var(--ig-muted);
-}
-
-.tracking-page .list-switch__btn:hover {
-  color: var(--ig-ink);
-  background: var(--ig-canvas);
-}
-
-.tracking-page .list-switch__btn.is-active {
-  background: #120a8f;
-  color: #fff;
-}
-
-.tracking-page .list-switch__count {
-  background: var(--ig-fill);
-  color: var(--ig-ink);
-}
-
-.tracking-page .list-switch__btn.is-active .list-switch__count {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
 }
 
 .tracking-page .tracking-break-stack {
@@ -3039,6 +3010,14 @@ html[data-theme="dark"] .header-stat-tile strong {
 
 .text-red { color: var(--red); }
 
+.field-warning {
+  display: block;
+  margin-top: 0.3rem;
+  color: #b42318;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 /* ===== A4 break report (RoarFitnessERP print pattern) ===== */
 .print-only {
   display: none;
@@ -3518,9 +3497,10 @@ tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
   padding: 0.25rem;
   width: fit-content;
   max-width: 100%;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--hover);
+  border: 1px solid #dbdbdb;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .list-switch__btn {
@@ -3528,38 +3508,39 @@ tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
   align-items: center;
   gap: 0.5rem;
   border: 1px solid transparent;
-  border-radius: calc(var(--radius-sm) - 4px);
+  border-radius: 999px;
   padding: 0.55rem 0.9rem;
   background: transparent;
-  color: var(--muted);
+  color: #64748b;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
 
 .list-switch__btn:hover {
-  color: var(--ink);
-  background: var(--surface);
+  color: #1e293b;
+  background: #f8fafc;
 }
 
 .list-switch__btn.is-active {
-  color: var(--on-fill);
-  background: var(--portal-fill);
+  color: #fff;
+  background: #120a8f;
 }
 
 .list-switch__count {
   min-width: 1.4rem;
   padding: 0.08rem 0.4rem;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.08);
-  color: inherit;
+  background: #eef2f7;
+  color: #1e293b;
   font-size: 0.75rem;
   font-weight: 700;
   text-align: center;
 }
 
 .list-switch__btn.is-active .list-switch__count {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .list-panel {
@@ -3583,6 +3564,137 @@ tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--muted);
+}
+
+.staff-console-page .toolbar,
+.staff-console-page .staff-filters {
+  padding: 0.85rem 1rem;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.staff-console-page .toolbar input,
+.staff-console-page .toolbar select,
+.staff-console-page .staff-filters input,
+.staff-console-page .staff-filters select,
+.staff-console-page .card-form input,
+.staff-console-page .card-form select,
+.staff-console-page .card-form textarea,
+.staff-console-page .setting-edit input {
+  background: #efefef;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.staff-console-page .toolbar input:focus,
+.staff-console-page .toolbar select:focus,
+.staff-console-page .staff-filters input:focus,
+.staff-console-page .staff-filters select:focus,
+.staff-console-page .card-form input:focus,
+.staff-console-page .card-form select:focus,
+.staff-console-page .card-form textarea:focus {
+  outline: none;
+  border-color: #0095f6;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.16);
+}
+
+.staff-console-page .list-panel,
+.staff-console-page .card-form,
+.staff-console-page .settings-list,
+.staff-console-page .staff-results {
+  padding: 1.25rem 1.3rem;
+  border: 1px solid #d7e3f8;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.staff-console-page .report-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  align-items: end;
+}
+
+.staff-console-page .report-filters .btn {
+  justify-self: start;
+}
+
+.staff-console-page .list-panel__head {
+  align-items: flex-start;
+}
+
+.staff-console-page .list-panel__hint {
+  margin: 0.3rem 0 0;
+}
+
+.staff-console-page .list-panel__head h2,
+.staff-console-page .card-form h2,
+.staff-console-page .settings-section-title,
+.staff-console-page .staff-results h2 {
+  color: #1d4ed8;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.staff-console-page .list-panel__hint,
+.staff-console-page .staff-results p,
+.staff-console-page .settings-list > .hint {
+  color: #64748b;
+}
+
+.staff-console-page .table-wrap {
+  border: 1px solid #dbdbdb;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.staff-console-page .btn-primary {
+  background: #120a8f;
+  border-color: #120a8f;
+  color: #fff;
+}
+
+.staff-console-page .btn-primary:hover {
+  background: #0c0766;
+}
+
+.staff-console-page .btn-ghost {
+  border-color: #dbdbdb;
+  background: #fff;
+  color: #1e293b;
+}
+
+html[data-theme="dark"] .staff-console-page .toolbar,
+html[data-theme="dark"] .staff-console-page .staff-filters,
+html[data-theme="dark"] .staff-console-page .list-panel,
+html[data-theme="dark"] .staff-console-page .card-form,
+html[data-theme="dark"] .staff-console-page .settings-list,
+html[data-theme="dark"] .staff-console-page .staff-results {
+  background: #121212;
+  border-color: #363636;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .staff-console-page .toolbar input,
+html[data-theme="dark"] .staff-console-page .toolbar select,
+html[data-theme="dark"] .staff-console-page .staff-filters input,
+html[data-theme="dark"] .staff-console-page .staff-filters select,
+html[data-theme="dark"] .staff-console-page .card-form input,
+html[data-theme="dark"] .staff-console-page .card-form select,
+html[data-theme="dark"] .staff-console-page .card-form textarea,
+html[data-theme="dark"] .staff-console-page .setting-edit input {
+  background: #262626;
+  color: #f5f5f5;
+}
+
+html[data-theme="dark"] .staff-console-page .list-panel__head h2,
+html[data-theme="dark"] .staff-console-page .card-form h2,
+html[data-theme="dark"] .staff-console-page .settings-section-title,
+html[data-theme="dark"] .staff-console-page .staff-results h2 {
+  color: #93c5fd;
 }
 
 .list-panel__hint {
@@ -5159,26 +5271,33 @@ html[data-theme="dark"] kbd {
 }
 
 html[data-theme="dark"] .list-switch {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: #121212;
+  border-color: #363636;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .list-switch__btn {
+  color: #a8a8a8;
 }
 
 html[data-theme="dark"] .list-switch__btn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--portal-ink);
+  background: #1a1a1a;
+  color: #f5f5f5;
 }
 
 html[data-theme="dark"] .list-switch__btn.is-active {
-  background: #eef1f5;
-  color: #111827;
+  background: #120a8f;
+  color: #fff;
 }
 
 html[data-theme="dark"] .list-switch__count {
-  background: rgba(255, 255, 255, 0.08);
+  background: #262626;
+  color: #f5f5f5;
 }
 
 html[data-theme="dark"] .list-switch__btn.is-active .list-switch__count {
-  background: rgba(17, 24, 39, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 html[data-theme="dark"] .portal-shell .portal-employee-title {

@@ -54,6 +54,15 @@ public class EmployeesController : ControllerBase
         return Ok(await _service.GetAllAsync(search, departmentId: null, includeDeactivated: false));
     }
 
+    [HttpGet("code-status")]
+    [RequireSection(AppSections.Employees)]
+    public async Task<ActionResult<EmployeeCodeStatusDto>> CodeStatus(
+        [FromQuery] string? code = null,
+        [FromQuery] int? excludeId = null)
+    {
+        return Ok(await _service.CheckCodeAsync(code, excludeId));
+    }
+
     [HttpGet("{id:int}")]
     [RequireSection(AppSections.Employees, AppSections.Tracking, AppSections.Reports)]
     public async Task<ActionResult<EmployeeDto>> GetById(int id)

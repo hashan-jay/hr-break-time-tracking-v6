@@ -90,10 +90,15 @@ public record CreateEmployeeRequest(
     int? ShiftId);
 
 public record UpdateEmployeeRequest(
+    [Required, MaxLength(50)] string EmployeeCode,
     [Required, MaxLength(150)] string FullName,
     [Required] int DepartmentId,
     DateTime HireDate,
     int? ShiftId);
+
+public record EmployeeCodeStatusDto(
+    bool Available,
+    string? Message);
 
 public record ShiftDto(
     int Id,

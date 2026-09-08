@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import api from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useFeedback } from '../feedback/FeedbackContext';
@@ -12,6 +12,10 @@ export default function DepartmentsPage() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
+  const [listView, setListView] = useState('active');
+  const activeItems = useMemo(() => items.filter((d) => !d.isDeleted), [items]);
+  const deletedItems = useMemo(() => items.filter((d) => d.isDeleted), [items]);
+  const visibleItems = listView === 'deleted' ? deletedItems : activeItems;
 
   const load = async () => {
     const { data } = await api.get('/departments', {
@@ -85,13 +89,52 @@ export default function DepartmentsPage() {
   };
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header">
         <div>
           <h1>Departments</h1>
           <p>Organize employees by department for tracking and reports.</p>
         </div>
+        <div className="header-stat-tiles">
+          <div className="header-stat-tiles__row">
+            <article className="header-stat-tile">
+              <span>Active</span>
+              <strong>{activeItems.length}</strong>
+            </article>
+            {canEdit && (
+              <article className="header-stat-tile">
+                <span>Deleted</span>
+                <strong>{deletedItems.length}</strong>
+              </article>
+            )}
+          </div>
+        </div>
       </header>
+
+      {canEdit && (
+        <div className="list-switch" role="tablist" aria-label="Department lists">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={listView === 'active'}
+            className={`list-switch__btn${listView === 'active' ? ' is-active' : ''}`}
+            onClick={() => setListView('active')}
+          >
+            Active
+            <span className="list-switch__count">{activeItems.length}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={listView === 'deleted'}
+            className={`list-switch__btn${listView === 'deleted' ? ' is-active' : ''}`}
+            onClick={() => setListView('deleted')}
+          >
+            Deleted
+            <span className="list-switch__count">{deletedItems.length}</span>
+          </button>
+        </div>
+      )}
 
       <div className={canEdit ? 'split-forms' : undefined}>
         {canEdit && (
@@ -116,7 +159,22 @@ export default function DepartmentsPage() {
           </form>
         )}
 
-        <div className="table-wrap">
+        <section className="list-panel">
+          <header className="list-panel__head">
+            <div>
+              <h2>{listView === 'deleted' ? 'Deleted departments' : 'Active departments'}</h2>
+              <p className="list-panel__hint">
+                {listView === 'deleted'
+                  ? 'Hidden from HR Manager and HR Assistant views until recovered.'
+                  : 'Used for employee assignment, tracking, and reports.'}
+              </p>
+            </div>
+            <span className="header-stat-tile">
+              <span>{listView === 'deleted' ? 'Deleted' : 'Active'}</span>
+              <strong>{visibleItems.length}</strong>
+            </span>
+          </header>
+          <div className="table-wrap">
           <table>
             <thead>
               <tr>
@@ -127,7 +185,7 @@ export default function DepartmentsPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((d) => (
+              {visibleItems.map((d) => (
                 <tr key={d.id} className={d.isDeleted ? 'is-deleted' : undefined}>
                   <td>
                     <strong>{d.name}</strong>
@@ -165,9 +223,17 @@ export default function DepartmentsPage() {
                   )}
                 </tr>
               ))}
+              {!visibleItems.length && (
+                <tr>
+                  <td className="empty" colSpan={canEdit ? 4 : 2}>
+                    {listView === 'deleted' ? 'No deleted departments.' : 'No departments yet.'}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
-        </div>
+          </div>
+        </section>
       </div>
     </div>
   );

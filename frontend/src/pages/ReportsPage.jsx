@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import api, { apiErrorMessage } from '../api/client';
 import { StatusBadge } from '../components/UiBits';
-import BreakReportDocument, { renderBreakReportHtml } from '../components/BreakReportDocument';
-import { downloadHtmlReport } from '../lib/downloadReport';
+import { renderBreakReportHtml } from '../components/BreakReportDocument';
+import { downloadHtmlReport, printHtmlReport } from '../lib/downloadReport';
 import { useFeedback } from '../feedback/FeedbackContext';
 
 const todayIso = () => {
@@ -127,13 +127,13 @@ export default function ReportsPage() {
 
   const printA4 = () => {
     if (!report) return;
-    document.body.classList.add('printing-break-report');
-    window.print();
-    window.addEventListener(
-      'afterprint',
-      () => document.body.classList.remove('printing-break-report'),
-      { once: true },
+    const opened = printHtmlReport(
+      `break-report-${from}-to-${to || from}`,
+      renderBreakReportHtml(report, filters),
     );
+    if (!opened) {
+      toast.error('Could not open the print dialog. Use Save HTML instead.');
+    }
   };
 
   const saveHtml = () => {
@@ -145,13 +145,13 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header no-print">
         <div>
           <h1>Reports</h1>
           <p>
             Choose shift start dates, shift, department, and/or employee, then Generate.
-            Each employee appears once with Meal and Comfort totals for the selected period.
+            A date range lists each employee day by day. A single day still shows one row per employee.
           </p>
         </div>
         <div className="header-actions">
@@ -228,16 +228,25 @@ export default function ReportsPage() {
       </form>
 
       {report && (
-        <>
-          <p className="hint no-print">
-            Limits — Meal: <strong>{report.mealLimitMinutes} min</strong>
-            {' · '}Comfort: <strong>{report.comfortLimitMinutes} min</strong>
-            {(report.shiftDisplay || report.shiftName) ? (
-              <> · Shift: <strong>{report.shiftDisplay || report.shiftName}</strong></>
-            ) : null}
-            {filters.departmentName ? <> · Department: <strong>{filters.departmentName}</strong></> : null}
-            {filters.employeeName ? <> · Employee: <strong>{filters.employeeName}</strong></> : null}
-          </p>
+        <section className="staff-results headlines-card no-print">
+          <header className="list-panel__head">
+            <div>
+              <h2>Report results</h2>
+              <p className="list-panel__hint">
+                Limits — Meal: <strong>{report.mealLimitMinutes} min</strong>
+                {' · '}Comfort: <strong>{report.comfortLimitMinutes} min</strong>
+                {(report.shiftDisplay || report.shiftName) ? (
+                  <> · Shift: <strong>{report.shiftDisplay || report.shiftName}</strong></>
+                ) : null}
+                {filters.departmentName ? <> · Department: <strong>{filters.departmentName}</strong></> : null}
+                {filters.employeeName ? <> · Employee: <strong>{filters.employeeName}</strong></> : null}
+              </p>
+            </div>
+            <span className="header-stat-tile">
+              <span>Employees</span>
+              <strong>{report.employeeDays}</strong>
+            </span>
+          </header>
 
           <div className="stats-grid compact no-print">
             <div className="stat-card"><div className="stat-value">{report.employeeDays}</div><div className="stat-label">Employees</div></div>
@@ -264,7 +273,7 @@ export default function ReportsPage() {
               </thead>
               <tbody>
                 {report.rows.map((r) => (
-                  <tr key={r.employeeId}>
+                  <tr key={`${r.employeeId}-${r.date}-${r.periodLabel || ''}`}>
                     <td>{r.periodLabel || r.date}</td>
                     <td>{r.employeeCode}</td>
                     <td>{r.employeeName}</td>
@@ -282,11 +291,7 @@ export default function ReportsPage() {
               </tbody>
             </table>
           </div>
-
-          <div className="break-report-print-source print-only" aria-hidden="true">
-            <BreakReportDocument report={report} filters={filters} />
-          </div>
-        </>
+        </section>
       )}
     </div>
   );

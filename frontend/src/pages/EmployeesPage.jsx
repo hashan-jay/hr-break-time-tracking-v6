@@ -13,6 +13,18 @@ const emptyForm = {
 
 const POLL_MS = 5000;
 const SEARCH_DEBOUNCE_MS = 350;
+const CODE_CHECK_MS = 280;
+const CODE_TAKEN_MESSAGE = 'This code is used by another user.';
+
+function normalizeCode(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function findLocalCodeOwner(employees, code, excludeId) {
+  const key = normalizeCode(code);
+  if (!key) return null;
+  return employees.find((emp) => normalizeCode(emp.employeeCode) === key && emp.id !== excludeId) || null;
+}
 
 function formatWhen(value) {
   if (!value) return '—';
@@ -114,6 +126,8 @@ export default function EmployeesPage() {
   const loadSeq = useRef(0);
   const searchTimer = useRef(null);
   const lastLoadError = useRef('');
+  const [codeTaken, setCodeTaken] = useState(false);
+  const codeCheckSeq = useRef(0);
 
   const load = useCallback(async (searchTerm = appliedSearch) => {
     const seq = ++loadSeq.current;
@@ -178,6 +192,41 @@ export default function EmployeesPage() {
     }
   }, [employees, editingId]);
 
+  useEffect(() => {
+    const excludeId = editingId;
+    const current = employees.find((emp) => emp.id === excludeId);
+    const ownCode = Boolean(current && normalizeCode(current.employeeCode) === normalizeCode(form.employeeCode));
+    if (findLocalCodeOwner(employees, form.employeeCode, excludeId)) {
+      setCodeTaken(true);
+      return undefined;
+    }
+    if (!form.employeeCode.trim() || ownCode) {
+      setCodeTaken(false);
+      return undefined;
+    }
+
+    const seq = ++codeCheckSeq.current;
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await api.get('/employees/code-status', {
+          params: {
+            code: form.employeeCode.trim(),
+            excludeId: excludeId || undefined,
+          },
+        });
+        if (seq === codeCheckSeq.current) setCodeTaken(data?.available === false);
+      } catch {
+        if (seq === codeCheckSeq.current) {
+          setCodeTaken(Boolean(findLocalCodeOwner(employees, form.employeeCode, excludeId)));
+        }
+      }
+    }, CODE_CHECK_MS);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [form.employeeCode, editingId, employees]);
+
   const activeEmployees = useMemo(
     () => employees.filter((e) => !e.isDeactivated),
     [employees],
@@ -190,15 +239,21 @@ export default function EmployeesPage() {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!canEdit) return;
+    if (findLocalCodeOwner(employees, form.employeeCode, editingId) || codeTaken) {
+      setCodeTaken(true);
+      return;
+    }
     try {
       const shiftId = form.shiftId ? Number(form.shiftId) : null;
       const payload = {
         ...form,
+        employeeCode: form.employeeCode.trim(),
         departmentId: Number(form.departmentId),
         shiftId,
       };
       if (editingId) {
         await api.put(`/employees/${editingId}`, {
+          employeeCode: payload.employeeCode,
           fullName: payload.fullName,
           departmentId: payload.departmentId,
           shiftId: payload.shiftId,
@@ -295,7 +350,7 @@ export default function EmployeesPage() {
   const shiftOptions = shifts.filter((s) => s.isActive || String(s.id) === String(form.shiftId));
 
   return (
-    <div className="page">
+    <div className="page staff-console-page">
       <header className="page-header">
         <div>
           <h1>Employees</h1>
@@ -324,15 +379,22 @@ export default function EmployeesPage() {
         {canEdit && (
           <form className="card-form" onSubmit={onSubmit}>
             <h2>{editingId ? 'Edit employee' : 'Add employee'}</h2>
-            {!editingId && (
-              <label>
-                Employee code
-                <input required value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} />
-              </label>
-            )}
             <label>
               Full name
               <input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
+            </label>
+            <label>
+              Code
+              <input
+                required
+                maxLength={50}
+                value={form.employeeCode}
+                onChange={(e) => setForm({ ...form, employeeCode: e.target.value })}
+                aria-invalid={codeTaken}
+              />
+              {codeTaken && (
+                <span className="field-warning" role="alert">{CODE_TAKEN_MESSAGE}</span>
+              )}
             </label>
             <label>
               Department
@@ -353,9 +415,11 @@ export default function EmployeesPage() {
               </select>
             </label>
             <div className="form-actions">
-              <button className="btn btn-primary" type="submit">{editingId ? 'Update' : 'Create'}</button>
+              <button className="btn btn-primary" type="submit" disabled={codeTaken}>
+                {editingId ? 'Update' : 'Create'}
+              </button>
               {editingId && (
-                <button type="button" className="btn btn-ghost" onClick={() => { setEditingId(null); setForm(emptyForm); }}>
+                <button type="button" className="btn btn-ghost" onClick={() => { setEditingId(null); setForm(emptyForm); setCodeTaken(false); }}>
                   Cancel
                 </button>
               )}
