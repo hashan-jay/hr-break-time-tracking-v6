@@ -292,6 +292,7 @@ export default function PortalPage() {
   const closeEmployee = useCallback(() => {
     if (passcodeFlow) return;
     setSelectedEmployeeId(null);
+    setSearch('');
   }, [passcodeFlow]);
 
   const captureToggle = useCallback(async (breakType) => {
@@ -433,12 +434,12 @@ export default function PortalPage() {
         searchRef.current.focus();
       } else if (e.key === 'Escape' && selectedEmployeeId && !passcodeFlow) {
         e.preventDefault();
-        setSelectedEmployeeId(null);
+        closeEmployee();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [selectedEmployeeId, passcodeFlow]);
+  }, [selectedEmployeeId, passcodeFlow, closeEmployee]);
 
   const passcodeEmployee = passcodeFlow
     ? (employeesView.find((e) => e.employeeId === passcodeFlow.employeeId) || passcodeFlow.employee)

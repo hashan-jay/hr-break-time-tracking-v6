@@ -5654,9 +5654,13 @@ html[data-theme="dark"] .portal-shell .portal-employee-title {
 
 html[data-theme="dark"] .portal-shell .portal-employee-meta,
 html[data-theme="dark"] .portal-shell .portal-main > .hint,
-html[data-theme="dark"] .portal-shell .portal-break-section__head p,
-html[data-theme="dark"] .portal-shell .portal-credits {
+html[data-theme="dark"] .portal-shell .portal-break-section__head p {
   color: #cbd5e1;
+}
+
+html[data-theme="dark"] .portal-shell .portal-credits,
+html[data-theme="dark"] .login-screen .portal-credits {
+  color: #111827;
 }
 
 html[data-theme="dark"] .portal-shell .portal-employee-meta kbd,
