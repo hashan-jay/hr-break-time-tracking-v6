@@ -317,7 +317,8 @@ public record WorkforceDayPointDto(
     int EmployeeCount,
     double ShiftPeopleMinutes,
     double UsedBreakPeopleMinutes,
-    double BreakSharePercent);
+    double BreakSharePercent,
+    bool IsFinal = false);
 
 public record WorkforceRegressionDto(
     double SlopePerDay,
@@ -338,7 +339,10 @@ public record WorkforceEfficiencySnapshotDto(
     string? HighlightedShiftLabel,
     IReadOnlyList<WorkforceShiftScoreDto> Shifts,
     IReadOnlyList<WorkforceDayPointDto> Daily,
-    WorkforceRegressionDto? Regression);
+    WorkforceRegressionDto? Regression,
+    double? DayEfficiencyPercent = null,
+    double? DayChangePercent = null,
+    bool DayIsFinal = false);
 
 public record SystemSettingDto(int Id, string Key, string Value, string? Description);
 

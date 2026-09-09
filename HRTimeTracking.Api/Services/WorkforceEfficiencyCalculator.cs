@@ -61,8 +61,12 @@ public static class WorkforceEfficiencyCalculator
 
         var liveShifts = todayShifts.Where(s => s.IsLive).ToList();
         var scoredToday = todayShifts.Where(s => s.EmployeeCount > 0).ToList();
-        var cardSource = liveShifts.Count > 0 ? liveShifts : scoredToday;
-        var card = Combine(cardSource, liveShifts.Count > 0);
+        // Glance card is live shifts only. Finished and upcoming shifts stay out of this number.
+        var card = liveShifts.Count > 0
+            ? Combine(liveShifts, hasLiveShift: true)
+            : IdleLiveCard();
+        var dayTotal = Combine(scoredToday, hasLiveShift: false);
+        var dayIsFinal = DayIsComplete(shifts, today, now);
         var yesterdayStart = today.AddDays(-1);
         var yesterdayScores = new List<WorkforceShiftScoreDto>();
         foreach (var shift in shifts)
@@ -73,13 +77,18 @@ public static class WorkforceEfficiencyCalculator
                 yesterdayScores.Add(score);
         }
 
-        IReadOnlyList<WorkforceShiftScoreDto> yesterdaySource = card.HasLiveShift && card.HighlightedShiftId is int liveId
-            ? yesterdayScores.Where(s => s.ShiftId == liveId).ToList()
-            : yesterdayScores;
-        var yesterday = Combine(yesterdaySource, hasLiveShift: false);
-        var change = yesterdaySource.Count == 0
+        var liveIds = liveShifts.Select(s => s.ShiftId).ToHashSet();
+        IReadOnlyList<WorkforceShiftScoreDto> yesterdayLiveSource = liveIds.Count == 0
+            ? []
+            : yesterdayScores.Where(s => liveIds.Contains(s.ShiftId)).ToList();
+        var yesterdayLive = Combine(yesterdayLiveSource, hasLiveShift: false);
+        var change = !card.HasLiveShift || yesterdayLiveSource.Count == 0
             ? null
-            : ChangePercent(card.EfficiencyPercent, yesterday.EfficiencyPercent);
+            : ChangePercent(card.EfficiencyPercent, yesterdayLive.EfficiencyPercent);
+        var yesterdayDay = Combine(yesterdayScores, hasLiveShift: false);
+        var dayChange = scoredToday.Count == 0 || yesterdayScores.Count == 0
+            ? null
+            : ChangePercent(dayTotal.EfficiencyPercent, yesterdayDay.EfficiencyPercent);
 
         var daily = new List<WorkforceDayPointDto>(30);
         var dailyPercents = new List<double>(30);
@@ -105,7 +114,8 @@ public static class WorkforceEfficiencyCalculator
                 combined.EmployeeCount,
                 combined.ShiftPeopleMinutes,
                 combined.UsedBreakPeopleMinutes,
-                combined.BreakSharePercent));
+                combined.BreakSharePercent,
+                DayIsComplete(shifts, date, now)));
         }
 
         var moving = MovingAverage(dailyPercents, 7);
@@ -129,7 +139,10 @@ public static class WorkforceEfficiencyCalculator
             card.HighlightedShiftLabel,
             todayShifts,
             withAnalytics,
-            regression.Summary);
+            regression.Summary,
+            dayTotal.EfficiencyPercent,
+            dayChange,
+            dayIsFinal);
     }
 
     public static WorkforceShiftScoreDto? ScoreShift(
@@ -238,6 +251,31 @@ public static class WorkforceEfficiencyCalculator
             _ =>
                 $"People are working well on {where}. Workforce efficiency is in the healthy range.{live}",
         };
+    }
+
+    private static CombinedScore IdleLiveCard()
+        => new(
+            100,
+            Tones.Good,
+            "No live shift is being tracked now. Today's all-shifts total is recorded when the last shift of the day ends.",
+            false,
+            null,
+            "No live shift",
+            0,
+            0,
+            0,
+            0);
+
+    private static bool DayIsComplete(IReadOnlyList<Shift> shifts, DateOnly date, DateTime now)
+    {
+        if (shifts.Count == 0) return true;
+        foreach (var shift in shifts)
+        {
+            var period = ShiftWindow.StartingOn(shift, date);
+            if (now < period.End)
+                return false;
+        }
+        return true;
     }
 
     private static CombinedScore Combine(

@@ -75,17 +75,20 @@ function efficiencyTone(tone) {
 
 function EfficiencyGlanceCard({ data }) {
   if (!data) return null;
-  const tone = efficiencyTone(data.tone);
+  const live = Boolean(data.hasLiveShift);
+  const tone = live ? efficiencyTone(data.tone) : undefined;
   return (
-    <article className={`glance-card glance-card--efficiency is-${data.tone || 'good'}`}>
+    <article className={`glance-card glance-card--efficiency ${live ? `is-${data.tone || 'good'}` : 'is-idle'}`}>
       <span className="glance-card__label">Workforce efficiency</span>
       <div className="glance-card__row">
-        <strong className={tone ? `is-${tone}` : undefined}>{formatPercent(data.efficiencyPercent)}</strong>
-        <Change value={data.changePercent} />
+        <strong className={tone ? `is-${tone}` : undefined}>
+          {live ? formatPercent(data.efficiencyPercent) : '—'}
+        </strong>
+        {live && <Change value={data.changePercent} />}
       </div>
       <div className="glance-card__meta">
-        <span>{data.highlightedShiftLabel || 'All shifts today'}</span>
-        {data.hasLiveShift && <span className="glance-live-badge">Tracking now</span>}
+        <span>{live ? (data.highlightedShiftLabel || 'Live shifts') : 'No live shift'}</span>
+        {live && <span className="glance-live-badge">Tracking now</span>}
       </div>
       {data.comment && <p className="glance-card__comment">{data.comment}</p>}
     </article>

@@ -33,7 +33,7 @@ function ChartTooltip({ active, payload }) {
   return (
     <div className="headlines-tooltip">
       <strong>{formatTrendDate(point.date)}</strong>
-      <p>{formatPercent(point.efficiencyPercent)} workforce efficiency</p>
+      <p>{formatPercent(point.efficiencyPercent)} workforce efficiency · {point.isFinal ? 'recorded' : 'in progress'}</p>
       <span>
         {formatNumber(point.employeeCount)} people · {formatNumber(point.usedBreakPeopleMinutes)} / {formatNumber(point.shiftPeopleMinutes)} people-min
       </span>
@@ -72,17 +72,28 @@ export default function DashboardWorkforceAnalytics({ data }) {
         compact
         tone="lime"
         title="Workforce efficiency."
-        description="People-minutes of work versus the 80-minute break allowance inside each shift. Shift length is taken from the shift clock range, and the live shift stays highlighted."
+        description="The live figure uses only shifts that are clocking now. All shifts for a date are recorded when that day’s last shift ends."
       />
 
       <div className="headlines-card portal-widget-3d dash-panel--lime workforce-analytics__panel">
-        <div className="headlines-metrics headlines-metrics--4">
+        <div className="headlines-metrics headlines-metrics--5">
           <article className="headlines-metric">
-            <span className="headlines-metric__label">Today / live shift</span>
+            <span className="headlines-metric__label">Live shifts</span>
             <div className="headlines-metric__row">
-              <strong className={toneClass(snapshot.tone)}>{formatPercent(snapshot.efficiencyPercent)}</strong>
+              <strong className={snapshot.hasLiveShift ? toneClass(snapshot.tone) : undefined}>
+                {snapshot.hasLiveShift ? formatPercent(snapshot.efficiencyPercent) : '—'}
+              </strong>
             </div>
-            <p className="headlines-metric__note">{snapshot.highlightedShiftLabel || 'All shifts today'}</p>
+            <p className="headlines-metric__note">{snapshot.hasLiveShift ? (snapshot.highlightedShiftLabel || 'Live shifts') : 'No live shift'}</p>
+          </article>
+          <article className="headlines-metric">
+            <span className="headlines-metric__label">Today (all shifts)</span>
+            <div className="headlines-metric__row">
+              <strong>{formatPercent(snapshot.dayEfficiencyPercent)}</strong>
+            </div>
+            <p className="headlines-metric__note">
+              {snapshot.dayIsFinal ? 'Recorded for the day.' : 'In progress until the last shift ends.'}
+            </p>
           </article>
           <article className="headlines-metric">
             <span className="headlines-metric__label">Break allowance</span>
@@ -218,7 +229,7 @@ export default function DashboardWorkforceAnalytics({ data }) {
       <div className="headlines-card portal-widget-3d workforce-day-card">
         <div className="workforce-day-card__head">
           <h3>Day-by-day people-minutes</h3>
-          <p>Each day uses that day’s shift length × people on the roster, minus used break people-minutes.</p>
+          <p>Each row is the all-shifts total for that date. A day is recorded when its last shift has ended. Live shifts are shown on the glance card instead.</p>
         </div>
         <div className="workforce-day-table-wrap">
           <table className="workforce-day-table">
@@ -231,6 +242,7 @@ export default function DashboardWorkforceAnalytics({ data }) {
                 <th>Break share</th>
                 <th>Efficiency</th>
                 <th>7-day avg</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -243,6 +255,7 @@ export default function DashboardWorkforceAnalytics({ data }) {
                   <td>{formatPercent(day.breakSharePercent)}</td>
                   <td>{formatPercent(day.efficiencyPercent)}</td>
                   <td>{formatPercent(day.movingAverage7)}</td>
+                  <td>{day.isFinal ? 'Recorded' : 'In progress'}</td>
                 </tr>
               ))}
             </tbody>

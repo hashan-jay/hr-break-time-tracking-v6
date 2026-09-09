@@ -1070,3 +1070,10 @@ D:\Projects\HRBreakTimeTrackingV6\HRTimeTracking.Api\artifacts\adjust-verify\run
 D:\Projects\HRBreakTimeTrackingV6\HRTimeTracking.Api\artifacts\adjust-verify\runtimes\win-arm64\native\msalruntime_arm64.dll
 D:\Projects\HRBreakTimeTrackingV6\HRTimeTracking.Api\artifacts\adjust-verify\runtimes\win-x64\native\msalruntime.dll
 D:\Projects\HRBreakTimeTrackingV6\HRTimeTracking.Api\artifacts\adjust-verify\runtimes\win-x86\native\msalruntime_x86.dll
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\appsettings.Development.json
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\appsettings.json
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.staticwebassets.endpoints.json
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.deps.json
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.runtimeconfig.json
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.dll
+D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.pdb

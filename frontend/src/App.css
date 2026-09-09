@@ -2303,6 +2303,11 @@ html[data-theme="dark"] .settings-list {
   background: #fff7f7;
 }
 
+.glance-card--efficiency.is-idle {
+  border-color: var(--portal-line);
+  background: var(--surface);
+}
+
 .glance-card__change {
   font-size: 0.82rem;
   font-weight: 700;
@@ -2535,6 +2540,11 @@ html[data-theme="dark"] .workforce-shift-card.is-alert {
   border-color: rgba(248, 113, 113, 0.35);
 }
 
+html[data-theme="dark"] .glance-card--efficiency.is-idle {
+  background: var(--surface);
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
 html[data-theme="dark"] .workforce-analytics__insight.is-good {
   background: #14241c;
   color: #86efac;
@@ -2723,6 +2733,10 @@ html[data-theme="dark"] .portal-dash-header .btn-soft-green:hover {
 
 .headlines-metrics--4 {
   grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.headlines-metrics--5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .headlines-metric__row strong.is-good { color: #15803d; }
@@ -2922,7 +2936,8 @@ html[data-theme="dark"] .portal-dash-header .btn-soft-green:hover {
 @media (max-width: 900px) {
   .headlines-metrics,
   .headlines-metrics--3,
-  .headlines-metrics--4 {
+  .headlines-metrics--4,
+  .headlines-metrics--5 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -2930,7 +2945,8 @@ html[data-theme="dark"] .portal-dash-header .btn-soft-green:hover {
 @media (max-width: 560px) {
   .headlines-metrics,
   .headlines-metrics--3,
-  .headlines-metrics--4 {
+  .headlines-metrics--4,
+  .headlines-metrics--5 {
     grid-template-columns: 1fr;
   }
 }
