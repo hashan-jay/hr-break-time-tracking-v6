@@ -1240,8 +1240,14 @@ html[data-theme="dark"] .portal-logout:focus-visible {
   background: #e7f3ff;
 }
 
-.tracking-page .tracking-roster tbody tr.on-break {
-  box-shadow: inset 3px 0 0 var(--ig-blue);
+.tracking-page .tracking-roster tbody tr.on-break,
+.tracking-page .tracking-roster tbody tr.on-break.selected {
+  background: #fff4e5;
+  box-shadow: inset 4px 0 0 #ea580c;
+}
+
+.tracking-page .tracking-roster tbody tr.on-break:hover {
+  background: #ffedd5;
 }
 
 .tracking-page .break-type-focus.is-active {
@@ -1467,7 +1473,14 @@ tbody tr.start-limit-reached.selected {
 
 .portal-shell tbody tr:hover { background: var(--ig-canvas); }
 .portal-shell tbody tr.selected { background: #e7f3ff; }
-.portal-shell tbody tr.on-break { box-shadow: inset 3px 0 0 var(--ig-blue); }
+.portal-shell tbody tr.on-break,
+.portal-shell tbody tr.on-break.selected {
+  background: #fff4e5;
+  box-shadow: inset 4px 0 0 #ea580c;
+}
+.portal-shell tbody tr.on-break:hover {
+  background: #ffedd5;
+}
 
 .portal-shell .btn-primary {
   background: #120a8f;
@@ -3549,7 +3562,14 @@ th {
 
 tbody tr:hover { background: var(--hover); }
 tbody tr.selected { background: var(--portal-accent-soft); }
-tbody tr.on-break { box-shadow: inset 3px 0 0 var(--amber); }
+tbody tr.on-break,
+tbody tr.on-break.selected {
+  background: #fff4e5;
+  box-shadow: inset 4px 0 0 #ea580c;
+}
+tbody tr.on-break:hover {
+  background: #ffedd5;
+}
 tbody tr.is-deleted { background: var(--hover); color: var(--muted); }
 tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
 .empty { text-align: center; color: var(--muted); padding: 1.5rem; }
@@ -5178,13 +5198,13 @@ html[data-theme="dark"] .app-portal .portal-side--ig .portal-nav__link.is-active
 }
 
 .portal-shell .theme-toggle.is-dark {
-  background: var(--ig-blue);
-  border-color: var(--ig-blue);
+  background: #120a8f;
+  border-color: #120a8f;
 }
 
 .portal-shell .theme-toggle.is-dark .theme-toggle__thumb {
   background: #fff;
-  color: var(--ig-blue);
+  color: #120a8f;
 }
 
 .portal-shell .theme-toggle__icon {
@@ -5485,8 +5505,12 @@ html[data-theme="dark"] tbody tr.selected {
 
 html[data-theme="dark"] .portal-shell tbody tr.on-break,
 html[data-theme="dark"] .app-portal tbody tr.on-break,
-html[data-theme="dark"] tbody tr.on-break {
-  box-shadow: inset 3px 0 0 #e8b84a;
+html[data-theme="dark"] tbody tr.on-break,
+html[data-theme="dark"] .portal-shell tbody tr.on-break.selected,
+html[data-theme="dark"] .app-portal tbody tr.on-break.selected,
+html[data-theme="dark"] tbody tr.on-break.selected {
+  background: #3b2410;
+  box-shadow: inset 4px 0 0 #fb923c;
 }
 
 html[data-theme="dark"] .portal-board__table tbody tr.on-other-break,
@@ -5753,8 +5777,10 @@ html[data-theme="dark"] .portal-shell tbody tr.selected {
   box-shadow: inset 3px 0 0 var(--ig-blue);
 }
 
-html[data-theme="dark"] .portal-shell tbody tr.on-break {
-  box-shadow: inset 3px 0 0 var(--ig-blue);
+html[data-theme="dark"] .portal-shell tbody tr.on-break,
+html[data-theme="dark"] .portal-shell tbody tr.on-break.selected {
+  background: #3b2410;
+  box-shadow: inset 4px 0 0 #fb923c;
 }
 
 html[data-theme="dark"] .portal-shell tbody tr.on-other-break,
@@ -5864,8 +5890,8 @@ html[data-theme="dark"] .portal-shell .theme-toggle {
 }
 
 html[data-theme="dark"] .portal-shell .theme-toggle.is-dark {
-  background: var(--ig-blue);
-  border-color: var(--ig-blue);
+  background: #120a8f;
+  border-color: #120a8f;
 }
 
 html[data-theme="dark"] .portal-shell .theme-toggle__icon {
