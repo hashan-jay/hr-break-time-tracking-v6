@@ -449,7 +449,12 @@ public record BreakTimeAdjustmentRowDto(
     int AdjustmentMinutes,
     int AttemptsUsed,
     int AttemptsLeft,
-    bool CanAdjust);
+    bool CanAdjust,
+    int? ShiftId = null,
+    string Status = "",
+    string StatusColor = "green");
+
+public record BreakTimeAdjustmentShiftOptionDto(int Id, string Name, string DisplayLabel);
 
 public record BreakTimeAdjustmentListDto(
     DateOnly Date,
@@ -457,7 +462,8 @@ public record BreakTimeAdjustmentListDto(
     DateOnly MaxDate,
     int MealLimitMinutes,
     int ComfortLimitMinutes,
-    IReadOnlyList<BreakTimeAdjustmentRowDto> Rows);
+    IReadOnlyList<BreakTimeAdjustmentRowDto> Rows,
+    IReadOnlyList<BreakTimeAdjustmentShiftOptionDto>? Shifts = null);
 
 public record SaveBreakTimeAdjustmentRequest(
     [Required] int EmployeeId,

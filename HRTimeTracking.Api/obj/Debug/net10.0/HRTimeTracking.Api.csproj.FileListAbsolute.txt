@@ -1077,3 +1077,10 @@ D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.deps
 D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.runtimeconfig.json
 D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.dll
 D:\Projects\HRBreakTimeTrackingV6\_build_live_efficiency\HRTimeTracking.Api.pdb
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\appsettings.Development.json
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\appsettings.json
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\HRTimeTracking.Api.staticwebassets.endpoints.json
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\HRTimeTracking.Api.deps.json
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\HRTimeTracking.Api.runtimeconfig.json
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\HRTimeTracking.Api.dll
+D:\Projects\HRBreakTimeTrackingV6\_build_adjust_time\HRTimeTracking.Api.pdb

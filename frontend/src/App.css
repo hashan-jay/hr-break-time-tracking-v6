@@ -3848,6 +3848,15 @@ tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
   color: #1e293b;
 }
 
+.adjust-time-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+  margin: 0 0 0.85rem;
+}
+
+.adjust-time-field,
 .adjust-time-date {
   display: grid;
   gap: 0.3rem;
@@ -3855,8 +3864,19 @@ tbody tr.is-deleted:hover { background: var(--portal-accent-soft); }
   color: var(--portal-muted);
 }
 
+.adjust-time-field--search {
+  flex: 1 1 16rem;
+  min-width: 14rem;
+}
+
+.adjust-time-field select,
 .adjust-time-date input {
   min-width: 11rem;
+}
+
+.adjust-time-field--search .search {
+  width: 100%;
+  min-width: 0;
 }
 
 .adjust-time-dialog {

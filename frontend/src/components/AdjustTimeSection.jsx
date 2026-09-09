@@ -22,12 +22,28 @@ function addDaysIso(iso, days) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+function matchesSearch(row, query) {
+  if (!query) return true;
+  const hay = [
+    row.employeeName,
+    row.employeeCode,
+    row.departmentName,
+    row.shiftName,
+    row.breakType,
+    row.status,
+  ].join(' ').toLowerCase();
+  return hay.includes(query);
+}
+
 export default function AdjustTimeSection() {
   const { toast } = useFeedback();
   const maxDate = todayIso();
   const minDate = addDaysIso(maxDate, -3);
   const [date, setDate] = useState(maxDate);
   const [rows, setRows] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [search, setSearch] = useState('');
+  const [shiftId, setShiftId] = useState('');
   const [busy, setBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [draft, setDraft] = useState(null);
@@ -37,9 +53,11 @@ export default function AdjustTimeSection() {
     try {
       const { data } = await api.get('/break-time-adjustments', { params: { date: nextDate } });
       setRows(data.rows || []);
+      setShifts(data.shifts || []);
     } catch (err) {
-      toast.error(apiErrorMessage(err, 'Could not load exceeded break times.'));
+      toast.error(apiErrorMessage(err, 'Could not load break times.'));
       setRows([]);
+      setShifts([]);
     } finally {
       setBusy(false);
     }
@@ -49,6 +67,16 @@ export default function AdjustTimeSection() {
     load(date);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
+
+  const query = search.trim().toLowerCase();
+  const visibleRows = useMemo(() => rows.filter((row) => {
+    if (!matchesSearch(row, query)) return false;
+    if (!shiftId) return true;
+    if (shiftId === 'none') return row.shiftId == null;
+    return String(row.shiftId) === String(shiftId);
+  }), [rows, query, shiftId]);
+
+  const hasUnassigned = rows.some((row) => row.shiftId == null);
 
   const openAdjust = (row) => {
     if (!row.canAdjust) return;
@@ -96,17 +124,44 @@ export default function AdjustTimeSection() {
     return `${left} adjustment attempt${left === 1 ? '' : 's'} left for this record.`;
   }, [draft]);
 
+  const emptyMessage = rows.length === 0
+    ? 'No Meal or Comfort break records for this day.'
+    : 'No employees match the current search or shift filter.';
+
   return (
     <section className="settings-list adjust-time-section">
       <div className="settings-shift-head">
         <div>
           <h2 className="settings-section-title">Adjust Time</h2>
           <p className="hint">
-            Developer only. Reduce an exceeded Meal or Comfort total by whole minutes when HR has a
-            valid reason. Original break records stay unchanged. You can edit today and the past 3 days.
+            Developer only. Reduce a Meal or Comfort total by whole minutes when HR has a valid
+            reason. Original break records stay unchanged. You can edit today and the past 3 days.
             Each record can be saved at most twice.
           </p>
         </div>
+      </div>
+
+      <div className="adjust-time-toolbar">
+        <label className="adjust-time-field adjust-time-field--search">
+          Search
+          <input
+            className="search"
+            type="search"
+            placeholder="Search employee, code, department, or break type…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
+        <label className="adjust-time-field">
+          Shift
+          <select value={shiftId} onChange={(e) => setShiftId(e.target.value)}>
+            <option value="">All shifts</option>
+            {hasUnassigned && <option value="none">No shift</option>}
+            {shifts.map((shift) => (
+              <option key={shift.id} value={shift.id}>{shift.displayLabel || shift.name}</option>
+            ))}
+          </select>
+        </label>
         <label className="adjust-time-date">
           Shift start date
           <input
@@ -130,22 +185,29 @@ export default function AdjustTimeSection() {
               <th>Employee</th>
               <th>Code</th>
               <th>Department</th>
+              <th>Shift</th>
               <th>Break type</th>
-              <th>Exceeded total</th>
+              <th>Break total</th>
               <th>Status</th>
               <th>Attempts left</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {visibleRows.map((row) => (
               <tr key={`${row.employeeId}-${row.breakType}-${row.date}`}>
                 <td className="col-name">{row.employeeName}</td>
                 <td>{row.employeeCode}</td>
                 <td>{row.departmentName}</td>
+                <td>{row.shiftName || '—'}</td>
                 <td>{row.breakType}</td>
                 <td className="mono">{row.displayedTotalDisplay}</td>
-                <td><StatusBadge status="EXCEEDED BREAK TIME LIMIT" color="red" /></td>
+                <td>
+                  <StatusBadge
+                    status={row.status || (row.statusColor === 'red' ? 'EXCEEDED BREAK TIME LIMIT' : 'WELL SATISFIED')}
+                    color={row.statusColor || 'green'}
+                  />
+                </td>
                 <td>{row.attemptsLeft}</td>
                 <td>
                   <button
@@ -159,14 +221,14 @@ export default function AdjustTimeSection() {
                 </td>
               </tr>
             ))}
-            {!busy && rows.length === 0 && (
+            {!busy && visibleRows.length === 0 && (
               <tr>
-                <td colSpan={8} className="empty">No exceeded Meal or Comfort records for this day.</td>
+                <td colSpan={9} className="empty">{emptyMessage}</td>
               </tr>
             )}
             {busy && (
               <tr>
-                <td colSpan={8} className="empty">Loading exceeded records…</td>
+                <td colSpan={9} className="empty">Loading break records…</td>
               </tr>
             )}
           </tbody>

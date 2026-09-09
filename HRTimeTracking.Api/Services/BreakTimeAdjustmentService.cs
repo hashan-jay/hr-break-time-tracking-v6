@@ -51,14 +51,35 @@ public class BreakTimeAdjustmentService : IBreakTimeAdjustmentService
             a => (a.EmployeeId, BreakTypes.Normalize(a.BreakType)),
             a => a);
 
+        var employeeIds = report.Rows.Select(r => r.EmployeeId).Distinct().ToList();
+        var shiftByEmployee = employeeIds.Count == 0
+            ? new Dictionary<int, int?>()
+            : await _db.Employees.AsNoTracking()
+                .Where(e => employeeIds.Contains(e.Id))
+                .ToDictionaryAsync(e => e.Id, e => e.ShiftId);
+
         var rows = new List<BreakTimeAdjustmentRowDto>();
         foreach (var row in report.Rows)
         {
-            if (row.MealStatus == BreakStatusCodes.Exceeded)
-                rows.Add(ToRow(row, BreakTypes.Meal, row.MealBreakSeconds, report.MealLimitMinutes, byKey));
-            if (row.ComfortStatus == BreakStatusCodes.Exceeded)
-                rows.Add(ToRow(row, BreakTypes.Comfort, row.ComfortBreakSeconds, report.ComfortLimitMinutes, byKey));
+            shiftByEmployee.TryGetValue(row.EmployeeId, out var shiftId);
+            if (UsedBreak(row.MealBreakCount, row.MealBreakSeconds))
+                rows.Add(ToRow(row, BreakTypes.Meal, row.MealBreakSeconds, report.MealLimitMinutes, row.MealStatus, row.MealStatusColor, shiftId, byKey));
+            if (UsedBreak(row.ComfortBreakCount, row.ComfortBreakSeconds))
+                rows.Add(ToRow(row, BreakTypes.Comfort, row.ComfortBreakSeconds, report.ComfortLimitMinutes, row.ComfortStatus, row.ComfortStatusColor, shiftId, byKey));
         }
+
+        var usedShiftIds = rows.Select(r => r.ShiftId).Where(id => id.HasValue).Select(id => id!.Value).ToHashSet();
+        var shiftRows = await _db.Shifts.AsNoTracking()
+            .Where(s => s.IsActive || usedShiftIds.Contains(s.Id))
+            .OrderBy(s => s.StartTime)
+            .ThenBy(s => s.Name)
+            .ToListAsync();
+        var shifts = shiftRows
+            .Select(s => new BreakTimeAdjustmentShiftOptionDto(
+                s.Id,
+                s.Name,
+                ShiftService.BuildDisplayLabel(s.Name, s.StartTime, s.EndTime, s.SpansNextDay)))
+            .ToList();
 
         return (true, null, new BreakTimeAdjustmentListDto(
             date,
@@ -69,7 +90,8 @@ public class BreakTimeAdjustmentService : IBreakTimeAdjustmentService
             rows
                 .OrderBy(r => r.EmployeeName)
                 .ThenBy(r => r.BreakType)
-                .ToList()));
+                .ToList(),
+            shifts));
     }
 
     public async Task<(bool Ok, string? Error, BreakTimeAdjustmentRowDto? Data)> SaveAsync(
@@ -143,6 +165,11 @@ public class BreakTimeAdjustmentService : IBreakTimeAdjustmentService
         await _liveUpdates.NotifyAsync("breaks");
 
         var left = Math.Max(0, BreakTimeAdjustment.MaxAttempts - existing.AttemptsUsed);
+        var (status, color) = BreakStatusCodes.FromTotalSeconds(requested, limitMinutes);
+        var shiftId = await _db.Employees.AsNoTracking()
+            .Where(e => e.Id == row.EmployeeId)
+            .Select(e => e.ShiftId)
+            .FirstOrDefaultAsync();
         return (true, null, new BreakTimeAdjustmentRowDto(
             row.EmployeeId,
             row.EmployeeCode,
@@ -159,14 +186,22 @@ public class BreakTimeAdjustmentService : IBreakTimeAdjustmentService
             newMinutes,
             existing.AttemptsUsed,
             left,
-            left > 0));
+            left > 0,
+            shiftId,
+            status,
+            color));
     }
+
+    private static bool UsedBreak(int count, int seconds) => count > 0 || seconds > 0;
 
     private static BreakTimeAdjustmentRowDto ToRow(
         ReportRowDto row,
         string breakType,
         int displayedSeconds,
         int fallbackLimit,
+        string status,
+        string statusColor,
+        int? shiftId,
         IReadOnlyDictionary<(int EmployeeId, string BreakType), BreakTimeAdjustment> stored)
     {
         stored.TryGetValue((row.EmployeeId, breakType), out var adj);
@@ -193,6 +228,9 @@ public class BreakTimeAdjustmentService : IBreakTimeAdjustmentService
             minutes,
             used,
             left,
-            left > 0);
+            left > 0,
+            shiftId,
+            string.IsNullOrWhiteSpace(status) ? BreakStatusCodes.FromTotalSeconds(displayedSeconds, limit).Status : status,
+            string.IsNullOrWhiteSpace(statusColor) ? BreakStatusCodes.FromTotalSeconds(displayedSeconds, limit).Color : statusColor);
     }
 }

@@ -25,7 +25,7 @@ public class BreakTimeAdjustmentsController : ControllerBase
             ? parsed
             : TimeDisplay.TodayLocal();
         var (ok, error, data) = await _service.ListExceededAsync(day);
-        if (!ok) return BadRequest(new ApiMessage(error ?? "Could not load exceeded breaks."));
+        if (!ok) return BadRequest(new ApiMessage(error ?? "Could not load break times."));
         return Ok(data);
     }
 
